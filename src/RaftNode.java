@@ -140,6 +140,12 @@ public class RaftNode implements MessageHandling, Runnable {
     }
 
     //main function
+
+    /**
+     * Main function
+     * @param args
+     * @throws Exception
+     */
     public static void main(String args[]) throws Exception {
         //if (args.length != 3) throw new Exception("Need 2 args: <port> <id> <num_peers>");
         //new usernode
