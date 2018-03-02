@@ -1,8 +1,6 @@
 import lib.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.rmi.RemoteException;
 
 public class RaftNode implements MessageHandling, Runnable {
@@ -23,7 +21,7 @@ public class RaftNode implements MessageHandling, Runnable {
     boolean isLeader    = false;
     boolean isFollower  = false;
 
-    Controller controller ;
+    static Controller controller ;
     RemoteController remoteController;
 
 
@@ -41,7 +39,6 @@ public class RaftNode implements MessageHandling, Runnable {
             this.isFollower  = true;
 
             remoteController = new RemoteController(this);
-            controller = new Controller(port);
             controller.register(this.id, remoteController);
 
             lib = new TransportLib(port, id, this);
@@ -94,7 +91,8 @@ public class RaftNode implements MessageHandling, Runnable {
             lastTerm     =  log[log.length-1].term;
         }
 
-        int dest_id = this.id-1;
+        int dest_id = controller.getNumRegistered();
+
         while(dest_id >= 0){
             RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, lastLogIndex, lastTerm);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -111,7 +109,7 @@ public class RaftNode implements MessageHandling, Runnable {
             byte[] byteMessage = byteArrayOutputStream.toByteArray();
             System.out.println("Sending from " + (this.id));
             System.out.println(dest_id);
-            Message message = new Message(MessageType.RequestVoteArgs, this.id , this.id,  byteMessage);
+            Message message = new Message(MessageType.RequestVoteArgs, this.id , dest_id,  byteMessage);
 
             try {
                 lib.sendMessage(message);
@@ -138,8 +136,34 @@ public class RaftNode implements MessageHandling, Runnable {
 
     @Override
     public Message deliverMessage(Message message) {
-        System.out.println("Received by " + this.id);
-        System.out.println(" Deliver Message");
+        MessageType type   = message.getType();
+        byte[] byteMessage = message.getBody();
+        int src            = message.getSrc();
+        int dest           = message.getDest();
+        Object obj         = null;
+
+        ByteArrayInputStream in = new ByteArrayInputStream(byteMessage);
+        ObjectInputStream is = null;
+        try {
+            is = new ObjectInputStream(in);
+            obj = is.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if(type == MessageType.RequestVoteArgs) {
+            System.out.println("RequestVoteArgs");
+            RequestVoteArgs requestVoteArgs = (RequestVoteArgs) obj;
+        } else if(type == MessageType.RequestVoteReply) {
+            System.out.println("REquestVoteReply");
+            RequestVoteReply requestVoteReply = (RequestVoteReply) obj;
+        } else if(type == MessageType.AppendEntriesArgs) {
+            System.out.println("AppendEntriesArgs");
+            AppendEntriesArgs appendEntriesArgs = (AppendEntriesArgs) obj;
+        } else {
+            System.out.println("AppendEntriesReply");
+            AppendEntriesReply appendEntriesReply = (AppendEntriesReply) obj;
+        }
         return null;
     }
 
@@ -155,7 +179,10 @@ public class RaftNode implements MessageHandling, Runnable {
         //new usernode
         //RaftNode UN = new RaftNode(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
         System.out.println(" Creating node for id - " + args[1]);
-        RaftNode raftNode   = new RaftNode(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        if(controller == null) {
+            controller = new Controller(9000);
+        }
+        RaftNode raftNode   = new RaftNode(9000, Integer.parseInt(args[0]), Integer.parseInt(args[1]));
 
     }
 
