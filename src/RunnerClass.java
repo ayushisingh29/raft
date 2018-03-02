@@ -8,7 +8,7 @@ public class RunnerClass {
         while(i < 4) {
             try {
                 arg[0] = String.valueOf(i);
-                arg[1] = "3";
+                arg[1] = "4";
                 RaftNode.main(arg);
 
             } catch (Exception e) {
