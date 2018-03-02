@@ -1,6 +1,5 @@
 import lib.*;
 
-import javax.naming.ldap.Control;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -8,6 +7,7 @@ import java.rmi.RemoteException;
 
 public class RaftNode implements MessageHandling, Runnable {
     private int id;
+    private int port;
     private static TransportLib lib;
     private int num_peers;
 
@@ -22,6 +22,7 @@ public class RaftNode implements MessageHandling, Runnable {
     boolean isCandidate = false;
     boolean isLeader    = false;
     boolean isFollower  = false;
+
     Controller controller ;
     RemoteController remoteController;
 
@@ -34,6 +35,7 @@ public class RaftNode implements MessageHandling, Runnable {
             this.lastApplied = 0;
             this.commitIndex = 0;
             this.votedFor    = -1;
+            this.port        = port;
             this.nextIndex   = new int[20];
             this.matchIndex  = new int[20];
             this.isFollower  = true;
@@ -84,10 +86,6 @@ public class RaftNode implements MessageHandling, Runnable {
 
         }
 
-
-
-
-
         int lastLogIndex = 0;
         int lastTerm = 0;
 
@@ -96,27 +94,32 @@ public class RaftNode implements MessageHandling, Runnable {
             lastTerm     =  log[log.length-1].term;
         }
 
-        RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, lastLogIndex, lastTerm);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream out = null;
+        int dest_id = this.id-1;
+        while(dest_id >= 0){
+            RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, lastLogIndex, lastTerm);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream out = null;
 
-        try {
-            out = new ObjectOutputStream(byteArrayOutputStream);
-            out.writeObject(requestVoteArgs);
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                out = new ObjectOutputStream(byteArrayOutputStream);
+                out.writeObject(requestVoteArgs);
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            byte[] byteMessage = byteArrayOutputStream.toByteArray();
+            System.out.println("Sending from " + (this.id));
+            System.out.println(dest_id);
+            Message message = new Message(MessageType.RequestVoteArgs, this.id , this.id,  byteMessage);
+
+            try {
+                lib.sendMessage(message);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            dest_id--;
         }
-
-        byte[] byteMessage = byteArrayOutputStream.toByteArray();
-        Message message = new Message(MessageType.RequestVoteArgs, this.id, this.id + 1,byteMessage);
-
-        try {
-            lib.sendMessage(message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
     }
 
     /*
@@ -135,6 +138,7 @@ public class RaftNode implements MessageHandling, Runnable {
 
     @Override
     public Message deliverMessage(Message message) {
+        System.out.println("Received by " + this.id);
         System.out.println(" Deliver Message");
         return null;
     }
@@ -150,8 +154,8 @@ public class RaftNode implements MessageHandling, Runnable {
         //if (args.length != 3) throw new Exception("Need 2 args: <port> <id> <num_peers>");
         //new usernode
         //RaftNode UN = new RaftNode(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-
-        RaftNode raftNode   = new RaftNode(9009, 1, 3);
+        System.out.println(" Creating node for id - " + args[1]);
+        RaftNode raftNode   = new RaftNode(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
 
     }
 
