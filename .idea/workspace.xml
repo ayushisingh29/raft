@@ -6,9 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="5b8f14a4-e065-493e-94bd-889c850bd581" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Raft/RaftNode.class" afterPath="$PROJECT_DIR$/out/production/Raft/RaftNode.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Raft/lib/Constants$Roles.class" afterPath="$PROJECT_DIR$/out/production/Raft/lib/Constants$Roles.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/RaftNode.java" afterPath="$PROJECT_DIR$/src/RaftNode.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/RunnerClass.java" afterPath="$PROJECT_DIR$/src/RunnerClass.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/Constants.java" afterPath="$PROJECT_DIR$/src/lib/Constants.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,31 +31,81 @@
       <file leaf-file-name="RaftNode.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="550">
-              <caret line="55" column="36" selection-start-line="55" selection-start-column="36" selection-end-line="55" selection-end-column="36" />
+            <state relative-caret-position="496">
+              <caret line="285" column="8" selection-start-line="285" selection-start-column="8" selection-end-line="285" selection-end-column="8" />
               <folding>
-                <element signature="e#7032#7033#0" expanded="true" />
-                <element signature="e#7059#7060#0" expanded="true" />
+                <element signature="e#7867#7868#0" expanded="true" />
+                <element signature="e#7894#7895#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RaftTest.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/RaftTest.java">
+      <file leaf-file-name="RemoteController.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lib/RemoteController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="14" column="27" selection-start-line="14" selection-start-column="27" selection-end-line="14" selection-end-column="27" />
+            <state relative-caret-position="104">
+              <caret line="13" column="78" selection-start-line="13" selection-start-column="78" selection-end-line="13" selection-end-column="78" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Controller.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/lib/Controller.java">
+      <file leaf-file-name="RemoteControllerIntf.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lib/RemoteControllerIntf.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="143">
-              <caret line="39" column="31" selection-start-line="39" selection-start-column="31" selection-end-line="39" selection-end-column="31" />
+            <state relative-caret-position="300">
+              <caret line="14" column="18" selection-start-line="14" selection-start-column="11" selection-end-line="14" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LogFile0.log" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/LogFile0.log">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="100">
+              <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LogFile1.log" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/LogFile1.log">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="100">
+              <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LogFile2.log" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/LogFile2.log">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LogFile3.log" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/LogFile3.log">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="100">
+              <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Constants.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/lib/Constants.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="200">
+              <caret line="8" column="118" selection-start-line="8" selection-start-column="118" selection-end-line="8" selection-end-column="118" />
               <folding />
             </state>
           </provider>
@@ -70,31 +121,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RequestVoteArgs.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/lib/RequestVoteArgs.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="441">
-              <caret line="22" column="5" selection-start-line="22" selection-start-column="5" selection-end-line="22" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="AppendEntriesArgs.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/lib/AppendEntriesArgs.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="275">
               <caret line="11" column="11" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RequestVoteReply.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/lib/RequestVoteReply.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="225">
-              <caret line="9" column="21" selection-start-line="9" selection-start-column="21" selection-end-line="9" selection-end-column="21" />
               <folding />
             </state>
           </provider>
@@ -138,14 +169,14 @@
         <option value="$PROJECT_DIR$/src/lib/LogEntries.java" />
         <option value="$PROJECT_DIR$/src/lib/RequestVoteReply.java" />
         <option value="$PROJECT_DIR$/src/lib/Message.java" />
-        <option value="$PROJECT_DIR$/src/lib/Constants.java" />
         <option value="$PROJECT_DIR$/src/RaftTest.java" />
         <option value="$PROJECT_DIR$/src/lib/RunnerClass.java" />
         <option value="$PROJECT_DIR$/src/RunnerClass.java" />
-        <option value="$PROJECT_DIR$/LogFile1.log" />
-        <option value="$PROJECT_DIR$/LogFile3.log" />
-        <option value="$PROJECT_DIR$/LogFile2.log" />
+        <option value="$PROJECT_DIR$/src/lib/Constants.java" />
         <option value="$PROJECT_DIR$/LogFile0.log" />
+        <option value="$PROJECT_DIR$/LogFile1.log" />
+        <option value="$PROJECT_DIR$/LogFile2.log" />
+        <option value="$PROJECT_DIR$/LogFile3.log" />
         <option value="$PROJECT_DIR$/src/RaftNode.java" />
       </list>
     </option>
@@ -568,7 +599,14 @@
       <option name="project" value="LOCAL" />
       <updated>1519967645499</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Get Message Created&#10;Candidate request to vote , heartbeat implemented">
+      <created>1519975561847</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1519975561847</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -645,7 +683,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Comment on main" />
     <MESSAGE value="single controller created, nodes registered" />
-    <option name="LAST_COMMIT_MESSAGE" value="single controller created, nodes registered" />
+    <MESSAGE value="Get Message Created&#10;Candidate request to vote , heartbeat implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="Get Message Created&#10;Candidate request to vote , heartbeat implemented" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -676,21 +715,15 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/RaftNode.java</url>
-          <line>42</line>
+          <line>45</line>
           <properties />
           <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint type="java-line">
-          <url>file://$PROJECT_DIR$/src/RaftNode.java</url>
-          <line>125</line>
-          <properties />
-          <option name="timeStamp" value="19" />
         </line-breakpoint>
       </breakpoints>
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="25" />
+      <option name="time" value="26" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -704,8 +737,8 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#7032#7033#0" expanded="true" />
-            <element signature="e#7059#7060#0" expanded="true" />
+            <element signature="e#7867#7868#0" expanded="true" />
+            <element signature="e#7894#7895#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -787,8 +820,8 @@
         <state relative-caret-position="7350">
           <caret line="147" column="53" selection-start-line="147" selection-start-column="53" selection-end-line="147" selection-end-column="53" />
           <folding>
-            <element signature="e#7032#7033#0" expanded="true" />
-            <element signature="e#7059#7060#0" expanded="true" />
+            <element signature="e#7867#7868#0" expanded="true" />
+            <element signature="e#7894#7895#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -883,14 +916,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/lib/RemoteController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1000">
-          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/lib/TransportLib.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2150">
@@ -903,14 +928,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="398">
           <caret line="432" column="0" selection-start-line="432" selection-start-column="0" selection-end-line="432" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/lib/Constants.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="4" column="11" selection-start-line="4" selection-start-column="11" selection-end-line="4" selection-end-column="11" />
           <folding />
         </state>
       </provider>
@@ -995,9 +1012,33 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib/AppendEntriesArgs.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="275">
+          <caret line="11" column="11" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib/Constants.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="200">
+          <caret line="8" column="118" selection-start-line="8" selection-start-column="118" selection-end-line="8" selection-end-column="118" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LogFile0.log">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/LogFile1.log">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="25">
+        <state relative-caret-position="100">
           <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
           <folding />
         </state>
@@ -1005,7 +1046,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/LogFile2.log">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-150">
+        <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
@@ -1019,29 +1060,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/LogFile0.log">
+    <entry file="file://$PROJECT_DIR$/src/lib/RemoteController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="9" column="31" selection-start-line="9" selection-start-column="31" selection-end-line="9" selection-end-column="31" />
+        <state relative-caret-position="104">
+          <caret line="13" column="78" selection-start-line="13" selection-start-column="78" selection-end-line="13" selection-end-column="78" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/lib/AppendEntriesArgs.java">
+    <entry file="file://$PROJECT_DIR$/src/lib/RemoteControllerIntf.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="275">
-          <caret line="11" column="11" selection-start-line="11" selection-start-column="11" selection-end-line="11" selection-end-column="11" />
+        <state relative-caret-position="300">
+          <caret line="14" column="18" selection-start-line="14" selection-start-column="11" selection-end-line="14" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="550">
-          <caret line="55" column="36" selection-start-line="55" selection-start-column="36" selection-end-line="55" selection-end-column="36" />
+        <state relative-caret-position="496">
+          <caret line="285" column="8" selection-start-line="285" selection-start-column="8" selection-end-line="285" selection-end-column="8" />
           <folding>
-            <element signature="e#7032#7033#0" expanded="true" />
-            <element signature="e#7059#7060#0" expanded="true" />
+            <element signature="e#7867#7868#0" expanded="true" />
+            <element signature="e#7894#7895#0" expanded="true" />
           </folding>
         </state>
       </provider>

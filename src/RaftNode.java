@@ -8,21 +8,21 @@ import java.util.logging.SimpleFormatter;
 
 public class RaftNode implements MessageHandling, Runnable {
     private int id;
-    private int port;
     private static TransportLib lib;
     private int num_peers;
 
-    int currentTerm;
-    int lastApplied;
-    int commitIndex;
-    int votedFor;
-    int nextIndex [];
-    int matchIndex [];
-    LogEntries log[];
+    private int currentTerm;
+    private int lastApplied;
+    private int commitIndex;
+    private int votedFor;
+    private int nextIndex [];
+    private int matchIndex [];
+    private LogEntries log[];
+    private long lastHeartBeat;
 
-    boolean isCandidate = false;
-    boolean isLeader    = false;
-    boolean isFollower  = false;
+    private boolean isCandidate = false;
+    private boolean isLeader    = false;
+    private boolean isFollower  = false;
 
     static Controller controller ;
     RemoteController remoteController;
@@ -36,16 +36,19 @@ public class RaftNode implements MessageHandling, Runnable {
     int votesGained;
 
 
+
     public RaftNode(int port, int id, int num_peers) {
         try {
 
-            this.id = id;
-            this.num_peers = num_peers;
+            int port1 = port;
+
+            this.id          = id;
+            this.num_peers   = num_peers;
             this.currentTerm = 0;
             this.lastApplied = 0;
             this.commitIndex = 0;
             this.votedFor    = -1;
-            this.port        = port;
+
             this.nextIndex   = new int[20];
             this.matchIndex  = new int[20];
             this.isFollower  = true;
@@ -57,32 +60,56 @@ public class RaftNode implements MessageHandling, Runnable {
 
             this.logger = Logger.getLogger("MyLog" + this.id);
             this.logger.setUseParentHandlers(false);
+
             try {
-                // This block configure the logger with handler and formatter
-                fh = new FileHandler("C:/Users/ayush/Documents/Sem 4- Spring 2018/Distributed Systems/raft/LogFile" + this.id + ".log");
+
+                //TODO - Remove the logger code
+                /*********************************************************
+                 * To remove the logger code later
+                 */
+                fh = new FileHandler(Constants.Roles.LOGPATH + "LogFile" + this.id + ".log");
                 this.logger.addHandler(fh);
                 SimpleFormatter formatter = new SimpleFormatter();
                 fh.setFormatter(formatter);
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+                /***********************************************************/
+
+            } catch (SecurityException | IOException e) {
                 e.printStackTrace();
             }
 
             remoteController = new RemoteController(this);
             controller.register(this.id, remoteController);
 
-            lib = new TransportLib(port, id, this);
+            lib = new TransportLib(port1, id, this);
             Thread leaderElectorThread = new Thread(this);
             leaderElectorThread.start();
 
         }
         catch (Exception ex) {
-
+            this.logger.info(ex.getLocalizedMessage());
         }
 
     }
 
+    /**
+     * Clear all counters and variables on state changes
+     */
+    private void clearSlate() {
+
+        this.votesGained = 0;
+        this.hasVoted    = false;
+        this.votedFor    = -1;
+
+        this.getStateReply.term     = this.currentTerm;
+        this.getStateReply.isLeader = this.isLeader;
+
+    }
+
+
+    /**
+     * Function to set the state of current node
+     * @param role
+     */
     private void setState(String role) {
         if(role.equals(Constants.Roles.CANDIDATE)) {
             this.isCandidate    = true;
@@ -123,6 +150,8 @@ public class RaftNode implements MessageHandling, Runnable {
             //this.logger.info("Waiting for all to get register");
         }
 
+        this.logger.info("id :: "  + this.id + " Registered all peers. Total peers : " + controller.getNumRegistered());
+
         if(this.isFollower) {
 
         }
@@ -134,6 +163,7 @@ public class RaftNode implements MessageHandling, Runnable {
             while(max_dest_id >= 0){
                 if(max_dest_id != this.id) {
                     try {
+                        System.out.println("Requesting vote");
                         lib.sendMessage(getMessageBundled(requestVoteArgs,this.id, max_dest_id));
                     } catch (RemoteException e) {
                         e.printStackTrace();
@@ -236,34 +266,75 @@ public class RaftNode implements MessageHandling, Runnable {
 
     @Override
     public Message deliverMessage(Message message) {
+        int src              = message.getSrc();
+        int dest             = message.getDest();
 
-        MessageType type   = message.getType();
-        byte[] byteMessage = message.getBody();
-        int src            = message.getSrc();
-        int dest           = message.getDest();
-        Object obj         = null;
-        this.logger.info("id :: "+ this.id+ " : Received from " + src + " to " + dest);
-        ByteArrayInputStream in = new ByteArrayInputStream(byteMessage);
+        Object obj           = null;
         ObjectInputStream is = null;
+        MessageType type     = message.getType();
+        byte[] byteMessage   = message.getBody();
+        ByteArrayInputStream in = new ByteArrayInputStream(byteMessage);
+
+        this.logger.info("id :: "+ this.id+ " : Received from " + src + " to " + dest);
+
         try {
+
             is = new ObjectInputStream(in);
             obj = is.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+
+        }
+        catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
 
         if(type == MessageType.RequestVoteArgs) {
-            this.logger.info("RequestVoteArgs");
+
             RequestVoteArgs requestVoteArgs = (RequestVoteArgs) obj;
-        } else if(type == MessageType.RequestVoteReply) {
-            this.logger.info("REquestVoteReply");
+
+            //give vote
+            boolean voteGranted = false;
+
+            if(!this.hasVoted) {
+                voteGranted = true;
+            }
+
+            RequestVoteReply requestVoteReply = new RequestVoteReply(this.currentTerm, voteGranted);
+
+            this.hasVoted = true;
+            System.out.println("Vote granted");
+
+            return getMessageBundled(requestVoteReply, this.id, src);
+
+        }
+
+        else if(type == MessageType.RequestVoteReply) {
+
+            this.logger.info("RequestVoteReply");
             RequestVoteReply requestVoteReply = (RequestVoteReply) obj;
-        } else if(type == MessageType.AppendEntriesArgs) {
+
+        }
+
+        else if(type == MessageType.AppendEntriesArgs) {
+
             this.logger.info("AppendEntriesArgs");
             AppendEntriesArgs appendEntriesArgs = (AppendEntriesArgs) obj;
-        } else {
+
+            //TODO check if the message is heartbeat
+            if((System.currentTimeMillis() - this.lastHeartBeat) > this.electionTimeout)  {
+
+                //TODO make candidate
+
+            } else {
+
+                this.lastHeartBeat = System.currentTimeMillis();
+            }
+
+        }
+        else {
+
             this.logger.info("AppendEntriesReply");
             AppendEntriesReply appendEntriesReply = (AppendEntriesReply) obj;
+
         }
         return null;
     }
