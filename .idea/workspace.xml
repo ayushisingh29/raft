@@ -7,9 +7,6 @@
     <list default="true" id="5b8f14a4-e065-493e-94bd-889c850bd581" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Raft/RaftNode.class" afterPath="$PROJECT_DIR$/out/production/Raft/RaftNode.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/Raft/lib/Constants$Roles.class" afterPath="$PROJECT_DIR$/out/production/Raft/lib/Constants$Roles.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/RaftNode.java" afterPath="$PROJECT_DIR$/src/RaftNode.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/Constants.java" afterPath="$PROJECT_DIR$/src/lib/Constants.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -606,7 +603,14 @@
       <option name="project" value="LOCAL" />
       <updated>1519975561847</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Heartbeat check implemented">
+      <created>1519978907278</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1519978907278</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -684,7 +688,8 @@
     <MESSAGE value="Comment on main" />
     <MESSAGE value="single controller created, nodes registered" />
     <MESSAGE value="Get Message Created&#10;Candidate request to vote , heartbeat implemented" />
-    <option name="LAST_COMMIT_MESSAGE" value="Get Message Created&#10;Candidate request to vote , heartbeat implemented" />
+    <MESSAGE value="Heartbeat check implemented" />
+    <option name="LAST_COMMIT_MESSAGE" value="Heartbeat check implemented" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
