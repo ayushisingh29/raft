@@ -10,10 +10,10 @@ import java.io.Serializable;
  */
 public class RequestVoteArgs implements Serializable{
 
-    int term;
-    int candidateId;
-    int lastLogIndex;
-    int lastLogTerm;
+    public int term;
+    public int candidateId;
+    public int lastLogIndex;
+    public int lastLogTerm;
 
     public RequestVoteArgs(int term, int candidateId, int lastLogIndex, int lastLogTerm) {
         this.term = term;

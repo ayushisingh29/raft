@@ -1,13 +1,15 @@
 package lib;
 
-public class AppendEntriesArgs {
+import java.io.Serializable;
 
-    int term;
-    int leaderId;
-    int prevLogIndex;
-    int prevLogTerm;
-    LogEntries[] entries;
-    int leaderCommit;
+public class AppendEntriesArgs implements Serializable{
+
+    public int term;
+    public int leaderId;
+    public int prevLogIndex;
+    public int prevLogTerm;
+    public LogEntries[] entries;
+    public int leaderCommit;
 
     public AppendEntriesArgs(int term, int leaderId, int prevLogIndex, int prevLogTerm, LogEntries[] entries, int leaderCommit) {
         this.term = term;

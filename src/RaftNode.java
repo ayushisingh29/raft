@@ -1,7 +1,11 @@
+import com.sun.corba.se.impl.orbutil.closure.Constant;
+import com.sun.org.apache.bcel.internal.*;
 import lib.*;
+import lib.Constants;
 
 import java.io.*;
 import java.rmi.RemoteException;
+import java.util.Random;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -55,7 +59,7 @@ public class RaftNode implements MessageHandling, Runnable {
             this.hasVoted    = false;
 
             this.getStateReply   = new GetStateReply(-1, false);
-            this.electionTimeout = (int)((Math.random())% 151) + 150;
+            this.electionTimeout = getRandom();
             this.votesGained     = 0;
 
             this.logger = Logger.getLogger("MyLog" + this.id);
@@ -91,6 +95,19 @@ public class RaftNode implements MessageHandling, Runnable {
 
     }
 
+    private int getRandom() {
+
+        //note a single Random object is reused here
+        Random randomGenerator = new Random();
+        int randomInt = (randomGenerator.nextInt(150) + 150);
+        return randomInt;
+
+    }
+
+
+
+
+
     /**
      * Clear all counters and variables on state changes
      */
@@ -102,6 +119,8 @@ public class RaftNode implements MessageHandling, Runnable {
 
         this.getStateReply.term     = this.currentTerm;
         this.getStateReply.isLeader = this.isLeader;
+
+        this.lastHeartBeat = System.currentTimeMillis();
 
     }
 
@@ -151,49 +170,90 @@ public class RaftNode implements MessageHandling, Runnable {
         }
 
         this.logger.info("id :: "  + this.id + " Registered all peers. Total peers : " + controller.getNumRegistered());
+        processFollower();
+    }
 
-        if(this.isFollower) {
+    private void processFollower(){
+        this.logger.info("id :: " + this.id + " is Follower");
+        this.setState(Constants.Roles.FOLLOWER);
+        this.clearSlate();
 
+        this.getStateReply.isLeader = this.isLeader;
+        this.getStateReply.term     = this.currentTerm; //TODO set current term
+
+        while(this.isFollower) {
+            long heartBeatInterval = System.currentTimeMillis() - this.lastHeartBeat;
+            this.logger.info("id :: " + this.id + " Received Heartbeat, interval = " + heartBeatInterval + " and election timeout = " + this.electionTimeout);
+
+            if(heartBeatInterval > this.electionTimeout)  {
+                this.logger.info("id :: " + this.id + " Election timeout, changing to candidate");
+                this.setState(Constants.Roles.CANDIDATE);
+                processCandidate();
+            }
+        }
+    }
+
+    private void processCandidate() {
+        this.logger.info("id :: " + this.id + " is Candidate");
+        this.currentTerm++;
+
+        int lastLogIndex = 0;
+        int lastTerm = 0;
+        int max_dest_id= -1;
+
+        this.setState(Constants.Roles.CANDIDATE);
+        this.clearSlate();
+
+        this.getStateReply.isLeader = this.isLeader;
+        this.getStateReply.term     = this.currentTerm;
+
+        if(log != null && log.length != 0) {
+            lastLogIndex = this.log.length-1;
+            lastTerm     = log[log.length-1].term;
         }
 
-        else if(this.isCandidate) {
+        RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, lastLogIndex, lastTerm);
+        max_dest_id = controller.getNumRegistered() - 1;
+        this.logger.info("id :: " + this.id + " Votes requested for term " + this.currentTerm);
 
-            RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, lastLogIndex, lastTerm);
-            max_dest_id = controller.getNumRegistered()-1;
-            while(max_dest_id >= 0){
+        while(max_dest_id >= 0){
+            try {
+                lib.sendMessage(getMessageBundled(requestVoteArgs,this.id, max_dest_id));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            max_dest_id--;
+        }
+    }
+
+    void processLeader() {
+        this.logger.info("id :: " + this.id + " elected leader");
+        this.setState(Constants.Roles.LEADER);
+        this.getStateReply.isLeader = this.isLeader;
+        this.getStateReply.term     = this.currentTerm;
+
+        while(this.isLeader) {
+            AppendEntriesArgs appendEntriesArgs = new AppendEntriesArgs(this.currentTerm, this.id, -1, -1, null, -1);
+            int max_dest_id = controller.getNumRegistered()-1;
+            while(max_dest_id >= 0 && this.isLeader){
                 if(max_dest_id != this.id) {
                     try {
-                        System.out.println("Requesting vote");
-                        lib.sendMessage(getMessageBundled(requestVoteArgs,this.id, max_dest_id));
+                        this.logger.info("id :: " + this.id + " Sending heartbeat");
+                        lib.sendMessage(getMessageBundled(appendEntriesArgs,this.id, max_dest_id));
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
                 }
                 max_dest_id--;
             }
-        }
-        else {
-            while(this.isLeader) {
-                AppendEntriesArgs appendEntriesArgs = new AppendEntriesArgs(this.currentTerm, this.id, -1, -1, null, -1);
-                max_dest_id = controller.getNumRegistered()-1;
-                while(max_dest_id >= 0 && this.isLeader){
-                    if(max_dest_id != this.id) {
-                        try {
-                            lib.sendMessage(getMessageBundled(appendEntriesArgs,this.id, max_dest_id));
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    max_dest_id--;
-                }
-                try {
-                    Thread.sleep(110);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                Thread.sleep(110);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
+
 
     private Message getMessageBundled(Object o, int src_id, int dest_id) {
         try {
@@ -266,75 +326,117 @@ public class RaftNode implements MessageHandling, Runnable {
 
     @Override
     public Message deliverMessage(Message message) {
-        int src              = message.getSrc();
-        int dest             = message.getDest();
-
-        Object obj           = null;
-        ObjectInputStream is = null;
-        MessageType type     = message.getType();
-        byte[] byteMessage   = message.getBody();
-        ByteArrayInputStream in = new ByteArrayInputStream(byteMessage);
-
-        this.logger.info("id :: "+ this.id+ " : Received from " + src + " to " + dest);
-
         try {
+            int src;
+            int dest;
+            boolean voteGranted;
 
-            is = new ObjectInputStream(in);
-            obj = is.readObject();
+            Object obj = null;
+            ObjectInputStream is = null;
+            MessageType type = message.getType();;
+            byte[] byteMessage;
+            ByteArrayInputStream in;
 
-        }
-        catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
 
-        if(type == MessageType.RequestVoteArgs) {
+            if (type == MessageType.RequestVoteArgs) {
 
-            RequestVoteArgs requestVoteArgs = (RequestVoteArgs) obj;
+                src = message.getSrc();
+                dest = message.getDest();
+                voteGranted = false;
 
-            //give vote
-            boolean voteGranted = false;
+                byteMessage = message.getBody();
+                in = new ByteArrayInputStream(byteMessage);
+                is = new ObjectInputStream(in);
+                obj = is.readObject();
 
-            if(!this.hasVoted) {
-                voteGranted = true;
-            }
+                RequestVoteArgs requestVoteArgs = (RequestVoteArgs) obj;
 
-            RequestVoteReply requestVoteReply = new RequestVoteReply(this.currentTerm, voteGranted);
+                if (this.isCandidate) {
+                    src = this.id;
+                }
+                //give vote
+                if (!this.hasVoted) {
+                    voteGranted = true;
+                    this.logger.info("id :: " + this.id + " Vote granted to " + src + " for term " + requestVoteArgs.term);
 
-            this.hasVoted = true;
-            System.out.println("Vote granted");
+                } else {
+                    voteGranted = false;
+                }
 
-            return getMessageBundled(requestVoteReply, this.id, src);
+                RequestVoteReply requestVoteReply = new RequestVoteReply(requestVoteArgs.term, voteGranted);
+                this.hasVoted = true;
 
-        }
+                try {
+                    return lib.sendMessage(getMessageBundled(requestVoteReply, this.id, src));
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
 
-        else if(type == MessageType.RequestVoteReply) {
 
-            this.logger.info("RequestVoteReply");
-            RequestVoteReply requestVoteReply = (RequestVoteReply) obj;
+            } else if (type == MessageType.RequestVoteReply) {
+                src = message.getSrc();
+                dest = message.getDest();
+                voteGranted = false;
 
-        }
+                byteMessage = message.getBody();
+                in = new ByteArrayInputStream(byteMessage);
+                is = new ObjectInputStream(in);
+                obj = is.readObject();
 
-        else if(type == MessageType.AppendEntriesArgs) {
+                RequestVoteReply requestVoteReply = (RequestVoteReply) obj;
 
-            this.logger.info("AppendEntriesArgs");
-            AppendEntriesArgs appendEntriesArgs = (AppendEntriesArgs) obj;
+                if (requestVoteReply.term == this.currentTerm && requestVoteReply.voteGranted) {
+                    this.votesGained++;
+                    this.logger.info("id :: " + this.id + " Vote gained from " + src);
+                    this.logger.info("id :: " + this.id + " Total votes gained = " + this.votesGained);
+                    if (this.votesGained > (this.num_peers-1) / 2) {
+                        this.logger.info("id :: " + this.id + " Majority votes. Becoming leader");
+                        processLeader();
+                    }
+                }
+            } else if (type == MessageType.AppendEntriesArgs) {
+                src = message.getSrc();
+                dest = message.getDest();
+                voteGranted = false;
 
-            //TODO check if the message is heartbeat
-            if((System.currentTimeMillis() - this.lastHeartBeat) > this.electionTimeout)  {
+                byteMessage = message.getBody();
+                in = new ByteArrayInputStream(byteMessage);
+                is = new ObjectInputStream(in);
+                obj = is.readObject();
 
-                //TODO make candidate
+                AppendEntriesArgs appendEntriesArgs = (AppendEntriesArgs) obj;
 
+                //If heartbeat
+                if (appendEntriesArgs.entries == null) {
+
+                    if (this.isCandidate) {
+                        this.logger.info("id :: " + this.id + " Heartbeat received by Candidate");
+                        if (appendEntriesArgs.term >= this.currentTerm) {
+                            this.logger.info("id :: " + this.id + " Heartbeat term greater. Becoming Follower");
+                            processFollower();
+                        }
+                    }
+
+                    if (this.isFollower) {
+
+                        long receivedTime = System.currentTimeMillis();
+                        long heartBeatInterval = receivedTime - this.lastHeartBeat;
+                        this.logger.info("id :: " + this.id + " Received Heartbeat, interval = " + heartBeatInterval + " and election timeout = " + this.electionTimeout);
+
+                        this.logger.info("id :: " + this.id + " Heartbeat received by Follower");
+                        this.lastHeartBeat = receivedTime;
+                        if(this.currentTerm != appendEntriesArgs.term) {
+                            this.currentTerm = appendEntriesArgs.term;
+                        }
+
+                    }
+                }
             } else {
+                AppendEntriesReply appendEntriesReply = (AppendEntriesReply) obj;
 
-                this.lastHeartBeat = System.currentTimeMillis();
             }
-
-        }
-        else {
-
-            this.logger.info("AppendEntriesReply");
-            AppendEntriesReply appendEntriesReply = (AppendEntriesReply) obj;
-
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -347,13 +449,14 @@ public class RaftNode implements MessageHandling, Runnable {
      * @throws Exception
      */
     public static void main(String args[]) throws Exception {
+
         //if (args.length != 3) throw new Exception("Need 2 args: <port> <id> <num_peers>");
-        //new usernode
-        //RaftNode UN = new RaftNode(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-        //this.logger.info(" Creating node for id - " + args[0]);
         if(controller == null) {
             controller = new Controller(9000);
         }
+        //RaftNode UN = new RaftNode(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        //this.logger.info(" Creating node for id - " + args[0]);
+
         RaftNode raftNode   = new RaftNode(9000, Integer.parseInt(args[0]), Integer.parseInt(args[1]));
 
     }
