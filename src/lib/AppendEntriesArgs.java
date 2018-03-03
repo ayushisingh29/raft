@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class AppendEntriesArgs implements Serializable{
 
+    private static final long serialVersionUID = 1;
     public int term;
     public int leaderId;
     public int prevLogIndex;

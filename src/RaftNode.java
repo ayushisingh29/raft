@@ -7,6 +7,7 @@ import java.io.*;
 import java.rmi.RemoteException;
 import java.util.Random;
 import java.util.logging.FileHandler;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
@@ -81,8 +82,8 @@ public class RaftNode implements MessageHandling, Runnable {
                 e.printStackTrace();
             }
 
-            remoteController = new RemoteController(this);
-            controller.register(this.id, remoteController);
+//            remoteController = new RemoteController(this);
+//            controller.register(this.id, remoteController);
 
             lib = new TransportLib(port1, id, this);
             Thread leaderElectorThread = new Thread(this);
@@ -174,7 +175,7 @@ public class RaftNode implements MessageHandling, Runnable {
     }
 
     private void processFollower(){
-        this.logger.info("id :: " + this.id + " is Follower");
+        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " is Follower");
         this.setState(Constants.Roles.FOLLOWER);
         this.clearSlate();
 
@@ -183,10 +184,10 @@ public class RaftNode implements MessageHandling, Runnable {
 
         while(this.isFollower) {
             long heartBeatInterval = System.currentTimeMillis() - this.lastHeartBeat;
-            this.logger.info("id :: " + this.id + " Received Heartbeat, interval = " + heartBeatInterval + " and election timeout = " + this.electionTimeout);
+//            this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Received Heartbeat, interval = " + heartBeatInterval + " and election timeout = " + this.electionTimeout);
 
             if(heartBeatInterval > this.electionTimeout)  {
-                this.logger.info("id :: " + this.id + " Election timeout, changing to candidate");
+                this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Election timeout, changing to candidate");
                 this.setState(Constants.Roles.CANDIDATE);
                 processCandidate();
             }
@@ -194,9 +195,11 @@ public class RaftNode implements MessageHandling, Runnable {
     }
 
     private void processCandidate() {
-        this.logger.info("id :: " + this.id + " is Candidate");
+        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " is Candidate");
         this.currentTerm++;
-
+//        if(this.currentTerm == 10) {
+//            System.exit(0);
+//        }
         int lastLogIndex = 0;
         int lastTerm = 0;
         int max_dest_id= -1;
@@ -214,11 +217,11 @@ public class RaftNode implements MessageHandling, Runnable {
 
         RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, lastLogIndex, lastTerm);
         max_dest_id = controller.getNumRegistered() - 1;
-        this.logger.info("id :: " + this.id + " Votes requested for term " + this.currentTerm);
+        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Votes requested for term " + this.currentTerm);
 
         while(max_dest_id >= 0){
             try {
-                lib.sendMessage(getMessageBundled(requestVoteArgs,this.id, max_dest_id));
+                lib.sendMessage(getMessageBundled(requestVoteArgs, this.id, max_dest_id));
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -227,7 +230,7 @@ public class RaftNode implements MessageHandling, Runnable {
     }
 
     void processLeader() {
-        this.logger.info("id :: " + this.id + " elected leader");
+        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " elected leader for term " + this.currentTerm);
         this.setState(Constants.Roles.LEADER);
         this.getStateReply.isLeader = this.isLeader;
         this.getStateReply.term     = this.currentTerm;
@@ -238,7 +241,7 @@ public class RaftNode implements MessageHandling, Runnable {
             while(max_dest_id >= 0 && this.isLeader){
                 if(max_dest_id != this.id) {
                     try {
-                        this.logger.info("id :: " + this.id + " Sending heartbeat");
+                        //this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Sending heartbeat");
                         lib.sendMessage(getMessageBundled(appendEntriesArgs,this.id, max_dest_id));
                     } catch (RemoteException e) {
                         e.printStackTrace();
@@ -327,10 +330,6 @@ public class RaftNode implements MessageHandling, Runnable {
     @Override
     public Message deliverMessage(Message message) {
         try {
-            int src;
-            int dest;
-            boolean voteGranted;
-
             Object obj = null;
             ObjectInputStream is = null;
             MessageType type = message.getType();;
@@ -339,6 +338,10 @@ public class RaftNode implements MessageHandling, Runnable {
 
 
             if (type == MessageType.RequestVoteArgs) {
+
+                int src;
+                int dest;
+                boolean voteGranted;
 
                 src = message.getSrc();
                 dest = message.getDest();
@@ -351,14 +354,19 @@ public class RaftNode implements MessageHandling, Runnable {
 
                 RequestVoteArgs requestVoteArgs = (RequestVoteArgs) obj;
 
+                if(requestVoteArgs.term > this.currentTerm) {
+                    this.currentTerm = requestVoteArgs.term;
+                    this.setState(Constants.Roles.FOLLOWER);
+                    //this.clearSlate();
+                }
+
                 if (this.isCandidate) {
                     src = this.id;
                 }
                 //give vote
                 if (!this.hasVoted) {
                     voteGranted = true;
-                    this.logger.info("id :: " + this.id + " Vote granted to " + src + " for term " + requestVoteArgs.term);
-
+                    this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Vote granted to " + src + " for term " + requestVoteArgs.term);
                 } else {
                     voteGranted = false;
                 }
@@ -367,13 +375,20 @@ public class RaftNode implements MessageHandling, Runnable {
                 this.hasVoted = true;
 
                 try {
-                    return lib.sendMessage(getMessageBundled(requestVoteReply, this.id, src));
+                    lib.sendMessage(getMessageBundled(requestVoteReply, this.id, src));
+                    if(this.isFollower) {
+                        processFollower();
+                    }
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
 
 
             } else if (type == MessageType.RequestVoteReply) {
+                int src;
+                int dest;
+                boolean voteGranted;
+
                 src = message.getSrc();
                 dest = message.getDest();
                 voteGranted = false;
@@ -387,14 +402,18 @@ public class RaftNode implements MessageHandling, Runnable {
 
                 if (requestVoteReply.term == this.currentTerm && requestVoteReply.voteGranted) {
                     this.votesGained++;
-                    this.logger.info("id :: " + this.id + " Vote gained from " + src);
-                    this.logger.info("id :: " + this.id + " Total votes gained = " + this.votesGained);
+                    this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Vote gained from " + src);
+                    this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Total votes gained = " + this.votesGained);
                     if (this.votesGained > (this.num_peers-1) / 2) {
-                        this.logger.info("id :: " + this.id + " Majority votes. Becoming leader");
+                        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Majority votes. Becoming leader");
                         processLeader();
                     }
                 }
             } else if (type == MessageType.AppendEntriesArgs) {
+                int src;
+                int dest;
+                boolean voteGranted;
+
                 src = message.getSrc();
                 dest = message.getDest();
                 voteGranted = false;
@@ -410,9 +429,10 @@ public class RaftNode implements MessageHandling, Runnable {
                 if (appendEntriesArgs.entries == null) {
 
                     if (this.isCandidate) {
-                        this.logger.info("id :: " + this.id + " Heartbeat received by Candidate");
                         if (appendEntriesArgs.term >= this.currentTerm) {
-                            this.logger.info("id :: " + this.id + " Heartbeat term greater. Becoming Follower");
+                            this.logger.info("id :: " + this.id +  " term :: " + this.currentTerm + " Heartbeat received by Candidate");
+                            this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Heartbeat term greater. Becoming Follower");
+                            this.currentTerm = appendEntriesArgs.term;
                             processFollower();
                         }
                     }
@@ -421,9 +441,9 @@ public class RaftNode implements MessageHandling, Runnable {
 
                         long receivedTime = System.currentTimeMillis();
                         long heartBeatInterval = receivedTime - this.lastHeartBeat;
-                        this.logger.info("id :: " + this.id + " Received Heartbeat, interval = " + heartBeatInterval + " and election timeout = " + this.electionTimeout);
+                        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Received Heartbeat, interval = " + heartBeatInterval + " and election timeout = " + this.electionTimeout);
 
-                        this.logger.info("id :: " + this.id + " Heartbeat received by Follower");
+                        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Heartbeat received by Follower");
                         this.lastHeartBeat = receivedTime;
                         if(this.currentTerm != appendEntriesArgs.term) {
                             this.currentTerm = appendEntriesArgs.term;

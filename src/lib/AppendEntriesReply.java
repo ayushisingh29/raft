@@ -2,6 +2,7 @@ package lib;
 
 public class AppendEntriesReply {
 
+    private static final long serialVersionUID = 1;
     int term;
     boolean success;
 

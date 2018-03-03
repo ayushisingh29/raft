@@ -10,6 +10,7 @@ import java.io.Serializable;
  */
 public class RequestVoteArgs implements Serializable{
 
+    private static final long serialVersionUID = 1;
     public int term;
     public int candidateId;
     public int lastLogIndex;
