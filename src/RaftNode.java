@@ -1,22 +1,21 @@
-import com.sun.corba.se.impl.orbutil.closure.Constant;
-import com.sun.org.apache.bcel.internal.*;
+import jdk.nashorn.internal.objects.Global;
 import lib.*;
-import lib.Constants;
 
+import javax.xml.bind.annotation.XmlElementDecl;
 import java.io.*;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.FileHandler;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 public class RaftNode implements MessageHandling, Runnable {
-    private int id;
+    public int id;
     private static TransportLib lib;
     private int num_peers;
 
-    private int currentTerm;
+    int currentTerm;
     private int lastApplied;
     private int commitIndex;
     private int votedFor;
@@ -25,9 +24,9 @@ public class RaftNode implements MessageHandling, Runnable {
     private LogEntries log[];
     private long lastHeartBeat;
 
-    private boolean isCandidate = false;
-    private boolean isLeader    = false;
-    private boolean isFollower  = false;
+    private volatile boolean isCandidate = false;
+    private volatile boolean isLeader    = false;
+    private volatile boolean isFollower  = false;
 
     static Controller controller ;
     RemoteController remoteController;
@@ -35,10 +34,11 @@ public class RaftNode implements MessageHandling, Runnable {
     Logger logger;
     FileHandler fh;
 
-    GetStateReply getStateReply;
-    int electionTimeout;
-    boolean hasVoted;
-    int votesGained;
+    private GetStateReply getStateReply;
+    private int electionTimeout;
+    private long heartBeatInterval;
+    private boolean hasVoted;
+    private int votesGained;
 
 
 
@@ -60,30 +60,10 @@ public class RaftNode implements MessageHandling, Runnable {
             this.hasVoted    = false;
 
             this.getStateReply   = new GetStateReply(-1, false);
-            this.electionTimeout = getRandom();
+            this.electionTimeout = getRandom(500, 900);
             this.votesGained     = 0;
-
-            this.logger = Logger.getLogger("MyLog" + this.id);
-            this.logger.setUseParentHandlers(false);
-
-            try {
-
-                //TODO - Remove the logger code
-                /*********************************************************
-                 * To remove the logger code later
-                 */
-                fh = new FileHandler(Constants.Roles.LOGPATH + "LogFile" + this.id + ".log");
-                this.logger.addHandler(fh);
-                SimpleFormatter formatter = new SimpleFormatter();
-                fh.setFormatter(formatter);
-                /***********************************************************/
-
-            } catch (SecurityException | IOException e) {
-                e.printStackTrace();
-            }
-
-//            remoteController = new RemoteController(this);
-//            controller.register(this.id, remoteController);
+            this.lastHeartBeat   = System.currentTimeMillis();
+            this.heartBeatInterval = 0;
 
             lib = new TransportLib(port1, id, this);
             Thread leaderElectorThread = new Thread(this);
@@ -91,40 +71,19 @@ public class RaftNode implements MessageHandling, Runnable {
 
         }
         catch (Exception ex) {
-            this.logger.info(ex.getLocalizedMessage());
+            ex.printStackTrace();
         }
 
     }
 
-    private int getRandom() {
+    private int getRandom(int min, int max) {
 
         //note a single Random object is reused here
         Random randomGenerator = new Random();
-        int randomInt = (randomGenerator.nextInt(150) + 150);
+        int randomInt = (randomGenerator.nextInt(min) + (max - min));
         return randomInt;
 
     }
-
-
-
-
-
-    /**
-     * Clear all counters and variables on state changes
-     */
-    private void clearSlate() {
-
-        this.votesGained = 0;
-        this.hasVoted    = false;
-        this.votedFor    = -1;
-
-        this.getStateReply.term     = this.currentTerm;
-        this.getStateReply.isLeader = this.isLeader;
-
-        this.lastHeartBeat = System.currentTimeMillis();
-
-    }
-
 
     /**
      * Function to set the state of current node
@@ -154,109 +113,150 @@ public class RaftNode implements MessageHandling, Runnable {
     @Override
     public void run() {
 
-        int lastLogIndex = 0;
-        int lastTerm = 0;
-        int max_dest_id= -1;
+        while(true) {
 
-        if(log != null && log.length != 0) {
-            lastLogIndex = this.log.length-1;
-            lastTerm     = log[log.length-1].term;
-        }
+            if(this.isLeader) {
+
+                while(this.isLeader) {
+
+                    this.resetVotes();
+                    this.getStateReply.term = this.currentTerm;
+                    this.getStateReply.isLeader =  true;
+
+                    this.setState(Constants.Roles.LEADER);
 
 
-        this.logger.info("Run for id :: " + this.id);
+                    AppendEntriesArgs appendEntriesArgs = new AppendEntriesArgs(this.currentTerm, this.id, -1, -1, null, -1);
 
-        while(this.num_peers != controller.getNumRegistered()){
-            //this.logger.info("Waiting for all to get register");
-        }
+                    int max_dest_id = this.num_peers-1;
 
-        this.logger.info("id :: "  + this.id + " Registered all peers. Total peers : " + controller.getNumRegistered());
-        processFollower();
-    }
+                    while(max_dest_id >= 0){
 
-    private void processFollower(){
-        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " is Follower");
-        this.setState(Constants.Roles.FOLLOWER);
-        this.clearSlate();
+                        if(max_dest_id != this.id) {
 
-        this.getStateReply.isLeader = this.isLeader;
-        this.getStateReply.term     = this.currentTerm; //TODO set current term
+                            try {
 
-        while(this.isFollower) {
-            long heartBeatInterval = System.currentTimeMillis() - this.lastHeartBeat;
-//            this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Received Heartbeat, interval = " + heartBeatInterval + " and election timeout = " + this.electionTimeout);
+                                lib.sendMessage(getMessageBundled(appendEntriesArgs, this.id, max_dest_id));
+                            }
 
-            if(heartBeatInterval > this.electionTimeout)  {
-                this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Election timeout, changing to candidate");
-                this.setState(Constants.Roles.CANDIDATE);
-                processCandidate();
-            }
-        }
-    }
+                            catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        max_dest_id--;
+                    }
 
-    private void processCandidate() {
-        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " is Candidate");
-        this.currentTerm++;
-//        if(this.currentTerm == 10) {
-//            System.exit(0);
-//        }
-        int lastLogIndex = 0;
-        int lastTerm = 0;
-        int max_dest_id= -1;
-
-        this.setState(Constants.Roles.CANDIDATE);
-        this.clearSlate();
-
-        this.getStateReply.isLeader = this.isLeader;
-        this.getStateReply.term     = this.currentTerm;
-
-        if(log != null && log.length != 0) {
-            lastLogIndex = this.log.length-1;
-            lastTerm     = log[log.length-1].term;
-        }
-
-        RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, lastLogIndex, lastTerm);
-        max_dest_id = controller.getNumRegistered() - 1;
-        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Votes requested for term " + this.currentTerm);
-
-        while(max_dest_id >= 0){
-            try {
-                lib.sendMessage(getMessageBundled(requestVoteArgs, this.id, max_dest_id));
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-            max_dest_id--;
-        }
-    }
-
-    void processLeader() {
-        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " elected leader for term " + this.currentTerm);
-        this.setState(Constants.Roles.LEADER);
-        this.getStateReply.isLeader = this.isLeader;
-        this.getStateReply.term     = this.currentTerm;
-
-        while(this.isLeader) {
-            AppendEntriesArgs appendEntriesArgs = new AppendEntriesArgs(this.currentTerm, this.id, -1, -1, null, -1);
-            int max_dest_id = controller.getNumRegistered()-1;
-            while(max_dest_id >= 0 && this.isLeader){
-                if(max_dest_id != this.id) {
                     try {
-                        //this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Sending heartbeat");
-                        lib.sendMessage(getMessageBundled(appendEntriesArgs,this.id, max_dest_id));
+                        Thread.sleep(110);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+
+
+            if(this.isFollower) {
+
+                while(this.isFollower) {
+                    this.getStateReply.term = this.currentTerm;
+                    this.getStateReply.isLeader = false;
+
+                    this.votesGained = 0;
+
+                    this.setState(Constants.Roles.FOLLOWER);
+
+                    if((System.currentTimeMillis() - this.lastHeartBeat) > this.electionTimeout)  {
+
+                        this.setState(Constants.Roles.CANDIDATE);
+                        break;
+
+                    }
+                }
+            }
+
+            if(this.isCandidate) {
+
+                this.votesGained = 0;
+
+                this.getStateReply.term = this.currentTerm;
+                this.getStateReply.isLeader = false;
+                this.currentTerm++;
+
+                this.setState(Constants.Roles.CANDIDATE);
+
+                Object obj = null;
+                ObjectInputStream is = null;
+
+                byte[] byteMessage = null;
+                ByteArrayInputStream in = null;
+
+                List<Integer> alives = new ArrayList<>();
+
+
+                RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, 0, 0);
+
+
+                for(int i = 0 ; i < this.num_peers; i++) {
+
+                    try {
+                        Message message = lib.sendMessage(new Message(MessageType.CheckAlive, this.id, i, null));
+                        if(message != null && message.getType() == MessageType.CheckAlive) {
+                            alives.add(i);
+                        }
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
+
                 }
-                max_dest_id--;
-            }
-            try {
-                Thread.sleep(110);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                for(int max_dest_id1 = 0; max_dest_id1 < this.num_peers; max_dest_id1++) {//: alives) {
+
+                    try {
+
+                        Message message = null;
+
+                        if(max_dest_id1 != this.id) {
+
+                            message =  lib.sendMessage(getMessageBundled(requestVoteArgs, this.id, max_dest_id1));
+
+                            if(message != null) {
+                                byteMessage = message.getBody();
+                                in = new ByteArrayInputStream(byteMessage);
+                                is = new ObjectInputStream(in);
+                                obj = is.readObject();
+
+                                RequestVoteReply requestVoteReply = (RequestVoteReply) obj;
+
+                                if (requestVoteReply.voteGranted) {
+                                    this.votesGained++;
+                                }
+
+                                if(this.votesGained > this.num_peers/2 -1 ) {
+                                    this.setState(Constants.Roles.LEADER);
+                                    resetVotes();
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
 
+    private void resetVotes() {
+
+        for(int i = 0; i < this.num_peers; i++) {
+            try {
+                Message m = lib.sendMessage(new Message(MessageType.InvalidateVote, this.id, i, null));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private Message getMessageBundled(Object o, int src_id, int dest_id) {
         try {
@@ -319,33 +319,32 @@ public class RaftNode implements MessageHandling, Runnable {
 
     @Override
     public GetStateReply getState() {
-
-        this.getStateReply.isLeader = this.isLeader;
-        this.getStateReply.term     = this.currentTerm;
-
         return this.getStateReply;
-
     }
 
     @Override
     public Message deliverMessage(Message message) {
+
         try {
             Object obj = null;
             ObjectInputStream is = null;
-            MessageType type = message.getType();;
-            byte[] byteMessage;
-            ByteArrayInputStream in;
+            MessageType type = message.getType();
+            byte[] byteMessage = null;
+            ByteArrayInputStream in = null;
 
+
+            if (type == MessageType.CheckAlive) {
+                return new Message(MessageType.CheckAlive, this.id, message.getSrc(), null);
+            }
+
+            if (type == MessageType.InvalidateVote) {
+                this.hasVoted = false;
+                return null;
+            }
 
             if (type == MessageType.RequestVoteArgs) {
 
-                int src;
-                int dest;
-                boolean voteGranted;
-
-                src = message.getSrc();
-                dest = message.getDest();
-                voteGranted = false;
+                RequestVoteReply requestVoteReply = null;
 
                 byteMessage = message.getBody();
                 in = new ByteArrayInputStream(byteMessage);
@@ -355,68 +354,23 @@ public class RaftNode implements MessageHandling, Runnable {
                 RequestVoteArgs requestVoteArgs = (RequestVoteArgs) obj;
 
                 if(requestVoteArgs.term > this.currentTerm) {
+
                     this.currentTerm = requestVoteArgs.term;
                     this.setState(Constants.Roles.FOLLOWER);
-                    //this.clearSlate();
-                }
 
-                if (this.isCandidate) {
-                    src = this.id;
-                }
-                //give vote
-                if (!this.hasVoted) {
-                    voteGranted = true;
-                    this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Vote granted to " + src + " for term " + requestVoteArgs.term);
-                } else {
-                    voteGranted = false;
-                }
+                    this.getStateReply.term = this.currentTerm;
+                    this.getStateReply.isLeader = false;
 
-                RequestVoteReply requestVoteReply = new RequestVoteReply(requestVoteArgs.term, voteGranted);
-                this.hasVoted = true;
+                    if(!this.hasVoted) {
 
-                try {
-                    lib.sendMessage(getMessageBundled(requestVoteReply, this.id, src));
-                    if(this.isFollower) {
-                        processFollower();
-                    }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
+                        this.hasVoted = true;
+                        requestVoteReply = new RequestVoteReply(requestVoteArgs.term, true);
+                        return getMessageBundled(requestVoteReply, message.getDest(), message.getSrc());
 
-
-            } else if (type == MessageType.RequestVoteReply) {
-                int src;
-                int dest;
-                boolean voteGranted;
-
-                src = message.getSrc();
-                dest = message.getDest();
-                voteGranted = false;
-
-                byteMessage = message.getBody();
-                in = new ByteArrayInputStream(byteMessage);
-                is = new ObjectInputStream(in);
-                obj = is.readObject();
-
-                RequestVoteReply requestVoteReply = (RequestVoteReply) obj;
-
-                if (requestVoteReply.term == this.currentTerm && requestVoteReply.voteGranted) {
-                    this.votesGained++;
-                    this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Vote gained from " + src);
-                    this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Total votes gained = " + this.votesGained);
-                    if (this.votesGained > (this.num_peers-1) / 2) {
-                        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Majority votes. Becoming leader");
-                        processLeader();
                     }
                 }
+
             } else if (type == MessageType.AppendEntriesArgs) {
-                int src;
-                int dest;
-                boolean voteGranted;
-
-                src = message.getSrc();
-                dest = message.getDest();
-                voteGranted = false;
 
                 byteMessage = message.getBody();
                 in = new ByteArrayInputStream(byteMessage);
@@ -428,31 +382,24 @@ public class RaftNode implements MessageHandling, Runnable {
                 //If heartbeat
                 if (appendEntriesArgs.entries == null) {
 
+                    if (this.currentTerm <= appendEntriesArgs.term) {
+
+                        this.currentTerm = appendEntriesArgs.term;
+                        this.setState(Constants.Roles.FOLLOWER);
+
+                        this.getStateReply.term = this.currentTerm;
+                        this.getStateReply.isLeader = false;
+                        this.lastHeartBeat = System.currentTimeMillis();
+
+                    }
+
                     if (this.isCandidate) {
-                        if (appendEntriesArgs.term >= this.currentTerm) {
-                            this.logger.info("id :: " + this.id +  " term :: " + this.currentTerm + " Heartbeat received by Candidate");
-                            this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Heartbeat term greater. Becoming Follower");
-                            this.currentTerm = appendEntriesArgs.term;
-                            processFollower();
-                        }
+                        this.currentTerm = appendEntriesArgs.term;
+                        this.setState(Constants.Roles.FOLLOWER);
+                        this.lastHeartBeat = System.currentTimeMillis();
                     }
 
-                    if (this.isFollower) {
-
-                        long receivedTime = System.currentTimeMillis();
-                        long heartBeatInterval = receivedTime - this.lastHeartBeat;
-                        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Received Heartbeat, interval = " + heartBeatInterval + " and election timeout = " + this.electionTimeout);
-
-                        this.logger.info("id :: " + this.id + " term :: " + this.currentTerm + " Heartbeat received by Follower");
-                        this.lastHeartBeat = receivedTime;
-                        if(this.currentTerm != appendEntriesArgs.term) {
-                            this.currentTerm = appendEntriesArgs.term;
-                        }
-
-                    }
                 }
-            } else {
-                AppendEntriesReply appendEntriesReply = (AppendEntriesReply) obj;
 
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -468,16 +415,17 @@ public class RaftNode implements MessageHandling, Runnable {
      * @param args
      * @throws Exception
      */
+
     public static void main(String args[]) throws Exception {
 
-        //if (args.length != 3) throw new Exception("Need 2 args: <port> <id> <num_peers>");
-        if(controller == null) {
-            controller = new Controller(9000);
-        }
-        //RaftNode UN = new RaftNode(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-        //this.logger.info(" Creating node for id - " + args[0]);
+        if (args.length != 3) throw new Exception("Need 2 args: <port> <id> <num_peers>");
+//        if(controller == null) {
+//            controller = new Controller(9000);
+//        }
+        RaftNode UN = new RaftNode(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+        //////System.out*.println(" Creating node for id - " + args[0]);
 
-        RaftNode raftNode   = new RaftNode(9000, Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+        //RaftNode raftNode   = new RaftNode(9000, Integer.parseInt(args[0]), Integer.parseInt(args[1]));
 
     }
 

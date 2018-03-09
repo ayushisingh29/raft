@@ -29,11 +29,11 @@ public class Globals {
 
             int id =name.id;
             String value = candidateVotesMap.get(name).toString();
-            System.out.println(id + " " + value);
+            //System.out.println(id + " " + value);
 
         }
 
-        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n Drumrolls.....Badum Tsssss!!!!!  Winner " + winner.id +  " with votes " + maxVotes +" for term " + winner.currentTerm +"\n\n\n\n\n\n\n\n\n\n");
+        //System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n Drumrolls.....Badum Tsssss!!!!!  Winner " + winner.id +  " with votes " + maxVotes +" for term " + winner.currentTerm +"\n\n\n\n\n\n\n\n\n\n");
 
         return winner;
     }

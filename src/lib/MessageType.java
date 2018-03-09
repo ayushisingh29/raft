@@ -6,5 +6,5 @@ package lib;
  *
  */
 public enum MessageType {
-    RequestVoteArgs, RequestVoteReply, AppendEntriesArgs, AppendEntriesReply
+    RequestVoteArgs, RequestVoteReply, AppendEntriesArgs, AppendEntriesReply,CheckAlive, InvalidateVote
 }
