@@ -1,7 +1,4 @@
-import jdk.nashorn.internal.objects.Global;
 import lib.*;
-
-import javax.xml.bind.annotation.XmlElementDecl;
 import java.io.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -160,6 +157,7 @@ public class RaftNode implements MessageHandling, Runnable {
             if(this.isFollower) {
 
                 while(this.isFollower) {
+
                     this.getStateReply.term = this.currentTerm;
                     this.getStateReply.isLeader = false;
 
@@ -168,7 +166,6 @@ public class RaftNode implements MessageHandling, Runnable {
                     this.setState(Constants.Roles.FOLLOWER);
 
                     if((System.currentTimeMillis() - this.lastHeartBeat) > this.electionTimeout)  {
-
                         this.setState(Constants.Roles.CANDIDATE);
                         break;
 
@@ -192,24 +189,9 @@ public class RaftNode implements MessageHandling, Runnable {
                 byte[] byteMessage = null;
                 ByteArrayInputStream in = null;
 
-                List<Integer> alives = new ArrayList<>();
-
 
                 RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, 0, 0);
 
-
-                for(int i = 0 ; i < this.num_peers; i++) {
-
-                    try {
-                        Message message = lib.sendMessage(new Message(MessageType.CheckAlive, this.id, i, null));
-                        if(message != null && message.getType() == MessageType.CheckAlive) {
-                            alives.add(i);
-                        }
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
-
-                }
                 for(int max_dest_id1 = 0; max_dest_id1 < this.num_peers; max_dest_id1++) {//: alives) {
 
                     try {
@@ -332,6 +314,10 @@ public class RaftNode implements MessageHandling, Runnable {
             byte[] byteMessage = null;
             ByteArrayInputStream in = null;
 
+            if(type == MessageType.ChangeToFollower) {
+                this.setState(Constants.Roles.FOLLOWER);
+                return null;
+            }
 
             if (type == MessageType.CheckAlive) {
                 return new Message(MessageType.CheckAlive, this.id, message.getSrc(), null);
@@ -386,19 +372,14 @@ public class RaftNode implements MessageHandling, Runnable {
 
                         this.currentTerm = appendEntriesArgs.term;
                         this.setState(Constants.Roles.FOLLOWER);
-
                         this.getStateReply.term = this.currentTerm;
                         this.getStateReply.isLeader = false;
                         this.lastHeartBeat = System.currentTimeMillis();
 
                     }
-
-                    if (this.isCandidate) {
-                        this.currentTerm = appendEntriesArgs.term;
-                        this.setState(Constants.Roles.FOLLOWER);
-                        this.lastHeartBeat = System.currentTimeMillis();
+                    else {
+                        lib.sendMessage(new Message(MessageType.ChangeToFollower, this.id, appendEntriesArgs.leaderId,null));
                     }
-
                 }
 
             }
