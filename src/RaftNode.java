@@ -1,4 +1,7 @@
+import jdk.nashorn.internal.objects.Global;
 import lib.*;
+
+import javax.xml.bind.annotation.XmlElementDecl;
 import java.io.*;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -18,7 +21,7 @@ public class RaftNode implements MessageHandling, Runnable {
     private int votedFor;
     private int nextIndex [];
     private int matchIndex [];
-    private LogEntries log[];
+    private ArrayList<LogEntries> logEntries;
     private long lastHeartBeat;
 
     private volatile boolean isCandidate = false;
@@ -51,8 +54,8 @@ public class RaftNode implements MessageHandling, Runnable {
             this.commitIndex = 0;
             this.votedFor    = -1;
 
-            this.nextIndex   = new int[20];
-            this.matchIndex  = new int[20];
+            this.nextIndex   = new int[this.num_peers];
+            this.matchIndex  = new int[this.num_peers];
             this.isFollower  = true;
             this.hasVoted    = false;
 
@@ -61,6 +64,7 @@ public class RaftNode implements MessageHandling, Runnable {
             this.votesGained     = 0;
             this.lastHeartBeat   = System.currentTimeMillis();
             this.heartBeatInterval = 0;
+            this.logEntries        = new ArrayList<>();
 
             lib = new TransportLib(port1, id, this);
             Thread leaderElectorThread = new Thread(this);
@@ -114,6 +118,8 @@ public class RaftNode implements MessageHandling, Runnable {
 
             if(this.isLeader) {
 
+                System.out.println(" \n\n Leader - " + this.id + " for term " + this.currentTerm);
+
                 while(this.isLeader) {
 
                     this.resetVotes();
@@ -157,7 +163,6 @@ public class RaftNode implements MessageHandling, Runnable {
             if(this.isFollower) {
 
                 while(this.isFollower) {
-
                     this.getStateReply.term = this.currentTerm;
                     this.getStateReply.isLeader = false;
 
@@ -166,6 +171,7 @@ public class RaftNode implements MessageHandling, Runnable {
                     this.setState(Constants.Roles.FOLLOWER);
 
                     if((System.currentTimeMillis() - this.lastHeartBeat) > this.electionTimeout)  {
+
                         this.setState(Constants.Roles.CANDIDATE);
                         break;
 
@@ -189,9 +195,24 @@ public class RaftNode implements MessageHandling, Runnable {
                 byte[] byteMessage = null;
                 ByteArrayInputStream in = null;
 
+                List<Integer> alives = new ArrayList<>();
+
 
                 RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, 0, 0);
 
+
+                for(int i = 0 ; i < this.num_peers; i++) {
+
+                    try {
+                        Message message = lib.sendMessage(new Message(MessageType.CheckAlive, this.id, i, null));
+                        if(message != null && message.getType() == MessageType.CheckAlive) {
+                            alives.add(i);
+                        }
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+
+                }
                 for(int max_dest_id1 = 0; max_dest_id1 < this.num_peers; max_dest_id1++) {//: alives) {
 
                     try {
@@ -296,7 +317,121 @@ public class RaftNode implements MessageHandling, Runnable {
 
     @Override
     public StartReply start(int command) {
-        return null;
+
+
+        long time = System.currentTimeMillis();
+
+        while(System.currentTimeMillis() - time < 2000) {}
+
+        System.out.println( " Start called for id - " + this.id  + " is leader = " + this.isLeader);
+
+        if(this.isLeader) {
+
+            LogEntries lastLogEntry = null;
+
+            if( this.logEntries.size() == 0) {
+
+                lastLogEntry = new LogEntries(-1, this.currentTerm, Integer.MIN_VALUE);
+
+            }
+
+            else {
+
+                lastLogEntry = this.logEntries.get(this.logEntries.size() - 1);
+
+            }
+
+            LogEntries logEntry = new LogEntries(this.logEntries.size(), this.currentTerm, command);
+
+            this.logEntries.add(logEntry);
+
+            int max_dest_id  = this.num_peers-1;
+
+            ArrayList<Integer> replied = new ArrayList<>();
+
+            int totalCommits = 0;
+
+            while(max_dest_id >= 0){
+
+                if(max_dest_id != this.id) {
+
+                    try {
+
+                        AppendEntriesArgs appendEntriesArgs = new AppendEntriesArgs(this.currentTerm, this.id, lastLogEntry.index, lastLogEntry.term, this.logEntries.toArray(new LogEntries[logEntries.size()]), 0);
+
+                        Message message = lib.sendMessage(getMessageBundled(appendEntriesArgs, this.id, max_dest_id));
+
+                        if(message != null) {
+                            byte[] byteMessage = message.getBody();
+                            ByteArrayInputStream in = new ByteArrayInputStream(byteMessage);
+                            ObjectInputStream is = new ObjectInputStream(in);
+                            Object obj = is.readObject();
+
+                            AppendEntriesReply reply = (AppendEntriesReply) obj;
+                            if(reply.success) {
+                                replied.add(max_dest_id);
+                                totalCommits++;
+                            }
+                        }
+
+                    }
+
+                    catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                max_dest_id--;
+            }
+
+            if(totalCommits > (this.num_peers -1) / 2) {
+
+                this.commitIndex++;
+
+                ApplyMsg applyMsg =  new ApplyMsg(this.id, this.commitIndex,command, false, null);
+
+                try {
+
+                    lib.applyChannel(applyMsg);
+
+                }
+                catch (RemoteException e) {
+
+                    e.printStackTrace();
+
+                }
+
+
+                for(int dest : replied){
+
+                    max_dest_id = dest;
+
+                    if(max_dest_id != this.id) {
+
+                        try {
+
+                            AppendEntriesArgs appendEntriesArgs = new AppendEntriesArgs(this.currentTerm, this.id, lastLogEntry.index, lastLogEntry.term, this.logEntries.toArray(new LogEntries[logEntries.size()]), 1);
+
+                            Message message = lib.sendMessage(getMessageBundled(appendEntriesArgs, this.id, max_dest_id));
+
+                        }
+
+                        catch (IOException e) {
+
+                            e.printStackTrace();
+
+                        }
+
+                    }
+                }
+            }
+
+            return new StartReply(this.commitIndex, this.currentTerm, this.isLeader);
+
+        }
+
+        return new StartReply(this.commitIndex, this.currentTerm, false);
     }
 
     @Override
@@ -314,10 +449,6 @@ public class RaftNode implements MessageHandling, Runnable {
             byte[] byteMessage = null;
             ByteArrayInputStream in = null;
 
-            if(type == MessageType.ChangeToFollower) {
-                this.setState(Constants.Roles.FOLLOWER);
-                return null;
-            }
 
             if (type == MessageType.CheckAlive) {
                 return new Message(MessageType.CheckAlive, this.id, message.getSrc(), null);
@@ -372,13 +503,64 @@ public class RaftNode implements MessageHandling, Runnable {
 
                         this.currentTerm = appendEntriesArgs.term;
                         this.setState(Constants.Roles.FOLLOWER);
+
                         this.getStateReply.term = this.currentTerm;
                         this.getStateReply.isLeader = false;
                         this.lastHeartBeat = System.currentTimeMillis();
 
                     }
+
+                    if (this.isCandidate) {
+                        this.currentTerm = appendEntriesArgs.term;
+                        this.setState(Constants.Roles.FOLLOWER);
+                        this.lastHeartBeat = System.currentTimeMillis();
+                    }
+
+                }
+
+                else {
+
+                    if(appendEntriesArgs.leaderCommit == 0) {
+
+                        //if not a commit message
+                        LogEntries entry = appendEntriesArgs.entries[appendEntriesArgs.entries.length-1];
+
+                        System.out.println( " Log entry requested from leader - " + message.getSrc() + " to peer "+ this.id +" for term - " +
+                                appendEntriesArgs.term + " and command " + appendEntriesArgs.entries[appendEntriesArgs.entries.length-1].command);
+
+                        System.out.println( " Current log size of peer number " + this.id + " is " +
+                                this.logEntries.size() + ". Adding entry to it.");
+
+                        this.logEntries.add(entry);
+
+                        System.out.println( " Current log size of peer number " + this.id + " is " + this.logEntries.size() + ". After adding entry.");
+
+                        AppendEntriesReply reply = new AppendEntriesReply(this.currentTerm,true);
+                        return getMessageBundled(reply, this.id, message.getSrc());
+
+                    }
+
                     else {
-                        lib.sendMessage(new Message(MessageType.ChangeToFollower, this.id, appendEntriesArgs.leaderId,null));
+
+                        System.out.println( " Commit requested from leader - " + message.getSrc() + " for term - " +
+                                appendEntriesArgs.term + " and command " + appendEntriesArgs.entries[appendEntriesArgs.entries.length-1].command);
+
+                        this.commitIndex++;
+
+                        ApplyMsg applyMsg =  new ApplyMsg(this.id, this.commitIndex,appendEntriesArgs.entries[appendEntriesArgs.entries.length-1].command, false, null);
+
+                        try {
+
+                            lib.applyChannel(applyMsg);
+                            return null;
+
+                        }
+                        catch (RemoteException e) {
+
+                            e.printStackTrace();
+
+                        }
+
                     }
                 }
 
