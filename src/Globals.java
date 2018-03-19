@@ -2,6 +2,9 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class Globals {
+
+
+    public static int currentLeaderId = -1;
     public static int totalVotesEligible = 0;
     public static HashMap<RaftNode,Integer> candidateVotesMap = new HashMap<>();
 

@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="5b8f14a4-e065-493e-94bd-889c850bd581" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Globals.java" afterPath="$PROJECT_DIR$/src/Globals.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/RaftNode.java" afterPath="$PROJECT_DIR$/src/RaftNode.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/MessageType.java" afterPath="$PROJECT_DIR$/src/lib/MessageType.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,8 +32,8 @@
       <file leaf-file-name="RaftNode.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="50">
-              <caret line="314" column="16" lean-forward="false" selection-start-line="314" selection-start-column="16" selection-end-line="314" selection-end-column="16" />
+            <state relative-caret-position="600">
+              <caret line="487" column="34" lean-forward="true" selection-start-line="487" selection-start-column="34" selection-end-line="487" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -41,8 +43,11 @@
         <entry file="file://$PROJECT_DIR$/src/Globals.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1550">
-              <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
-              <folding />
+              <caret line="34" column="14" lean-forward="false" selection-start-line="34" selection-start-column="14" selection-end-line="34" selection-end-column="14" />
+              <folding>
+                <marker date="1521424626820" expanded="true" signature="277:351" ph="{...}" />
+                <marker date="1521424626820" expanded="true" signature="392:1225" ph="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -661,7 +666,14 @@
       <option name="project" value="LOCAL" />
       <updated>1521416261693</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Basic Agree Passing - Made log matching in previous entry">
+      <created>1521424284429</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1521424284429</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -745,7 +757,8 @@
     <MESSAGE value="Leader election and splitvotes" />
     <MESSAGE value="Working code" />
     <MESSAGE value="Basic Agree Passing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Basic Agree Passing" />
+    <MESSAGE value="Basic Agree Passing - Made log matching in previous entry" />
+    <option name="LAST_COMMIT_MESSAGE" value="Basic Agree Passing - Made log matching in previous entry" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -776,7 +789,7 @@
         </line-breakpoint>
         <line-breakpoint type="java-line">
           <url>file://$PROJECT_DIR$/src/RaftNode.java</url>
-          <line>50</line>
+          <line>49</line>
           <properties />
           <option name="timeStamp" value="17" />
         </line-breakpoint>
@@ -1070,8 +1083,11 @@
     <entry file="file://$PROJECT_DIR$/src/Globals.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1550">
-          <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
-          <folding />
+          <caret line="34" column="14" lean-forward="false" selection-start-line="34" selection-start-column="14" selection-end-line="34" selection-end-column="14" />
+          <folding>
+            <marker date="1521424626820" expanded="true" signature="277:351" ph="{...}" />
+            <marker date="1521424626820" expanded="true" signature="392:1225" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1124,8 +1140,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="50">
-          <caret line="314" column="16" lean-forward="false" selection-start-line="314" selection-start-column="16" selection-end-line="314" selection-end-column="16" />
+        <state relative-caret-position="600">
+          <caret line="487" column="34" lean-forward="true" selection-start-line="487" selection-start-column="34" selection-end-line="487" selection-end-column="34" />
           <folding />
         </state>
       </provider>
