@@ -6,63 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5b8f14a4-e065-493e-94bd-889c850bd581" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Config.java" afterPath="$PROJECT_DIR$/src/Config.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Globals.java" afterPath="$PROJECT_DIR$/src/Globals.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Makefile" afterPath="$PROJECT_DIR$/src/Makefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/README.md" afterPath="$PROJECT_DIR$/src/README.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/RaftNode.java" afterPath="$PROJECT_DIR$/src/RaftNode.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/RaftTest.java" afterPath="$PROJECT_DIR$/src/RaftTest.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/RunnerClass.java" afterPath="$PROJECT_DIR$/src/RunnerClass.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/Config.NCommitted.html" afterPath="$PROJECT_DIR$/src/doc/Config.NCommitted.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/Config.html" afterPath="$PROJECT_DIR$/src/doc/Config.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/RaftNode.html" afterPath="$PROJECT_DIR$/src/doc/RaftNode.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/RaftTest.html" afterPath="$PROJECT_DIR$/src/doc/RaftTest.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/allclasses-frame.html" afterPath="$PROJECT_DIR$/src/doc/allclasses-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/allclasses-noframe.html" afterPath="$PROJECT_DIR$/src/doc/allclasses-noframe.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/constant-values.html" afterPath="$PROJECT_DIR$/src/doc/constant-values.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/help-doc.html" afterPath="$PROJECT_DIR$/src/doc/help-doc.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/index-all.html" afterPath="$PROJECT_DIR$/src/doc/index-all.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/index.html" afterPath="$PROJECT_DIR$/src/doc/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/ApplyMsg.html" afterPath="$PROJECT_DIR$/src/doc/lib/ApplyMsg.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/Controller.html" afterPath="$PROJECT_DIR$/src/doc/lib/Controller.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/GetStateReply.html" afterPath="$PROJECT_DIR$/src/doc/lib/GetStateReply.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/Message.html" afterPath="$PROJECT_DIR$/src/doc/lib/Message.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/MessageHandling.html" afterPath="$PROJECT_DIR$/src/doc/lib/MessageHandling.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/MessageType.html" afterPath="$PROJECT_DIR$/src/doc/lib/MessageType.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/MessagingLayer.html" afterPath="$PROJECT_DIR$/src/doc/lib/MessagingLayer.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/RemoteController.html" afterPath="$PROJECT_DIR$/src/doc/lib/RemoteController.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/RemoteControllerIntf.html" afterPath="$PROJECT_DIR$/src/doc/lib/RemoteControllerIntf.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/RequestVoteArgs.html" afterPath="$PROJECT_DIR$/src/doc/lib/RequestVoteArgs.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/RequestVoteReply.html" afterPath="$PROJECT_DIR$/src/doc/lib/RequestVoteReply.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/StartReply.html" afterPath="$PROJECT_DIR$/src/doc/lib/StartReply.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/TransportLib.html" afterPath="$PROJECT_DIR$/src/doc/lib/TransportLib.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/package-frame.html" afterPath="$PROJECT_DIR$/src/doc/lib/package-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/lib/package-summary.html" afterPath="$PROJECT_DIR$/src/doc/lib/package-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/overview-frame.html" afterPath="$PROJECT_DIR$/src/doc/overview-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/overview-summary.html" afterPath="$PROJECT_DIR$/src/doc/overview-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/package-frame.html" afterPath="$PROJECT_DIR$/src/doc/package-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/package-list" afterPath="$PROJECT_DIR$/src/doc/package-list" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/package-summary.html" afterPath="$PROJECT_DIR$/src/doc/package-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/script.js" afterPath="$PROJECT_DIR$/src/doc/script.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/serialized-form.html" afterPath="$PROJECT_DIR$/src/doc/serialized-form.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/doc/stylesheet.css" afterPath="$PROJECT_DIR$/src/doc/stylesheet.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/AppendEntriesArgs.java" afterPath="$PROJECT_DIR$/src/lib/AppendEntriesArgs.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/AppendEntriesReply.java" afterPath="$PROJECT_DIR$/src/lib/AppendEntriesReply.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/ApplyMsg.java" afterPath="$PROJECT_DIR$/src/lib/ApplyMsg.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/Constants.java" afterPath="$PROJECT_DIR$/src/lib/Constants.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/Controller.java" afterPath="$PROJECT_DIR$/src/lib/Controller.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/GetStateReply.java" afterPath="$PROJECT_DIR$/src/lib/GetStateReply.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/LogEntries.java" afterPath="$PROJECT_DIR$/src/lib/LogEntries.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/Message.java" afterPath="$PROJECT_DIR$/src/lib/Message.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/MessageHandling.java" afterPath="$PROJECT_DIR$/src/lib/MessageHandling.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/MessageType.java" afterPath="$PROJECT_DIR$/src/lib/MessageType.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/MessagingLayer.java" afterPath="$PROJECT_DIR$/src/lib/MessagingLayer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/RemoteController.java" afterPath="$PROJECT_DIR$/src/lib/RemoteController.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/RemoteControllerIntf.java" afterPath="$PROJECT_DIR$/src/lib/RemoteControllerIntf.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/RequestVoteArgs.java" afterPath="$PROJECT_DIR$/src/lib/RequestVoteArgs.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/RequestVoteReply.java" afterPath="$PROJECT_DIR$/src/lib/RequestVoteReply.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/StartReply.java" afterPath="$PROJECT_DIR$/src/lib/StartReply.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/TransportLib.java" afterPath="$PROJECT_DIR$/src/lib/TransportLib.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -86,7 +30,7 @@
       <file leaf-file-name="RaftNode.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4050">
+            <state relative-caret-position="50">
               <caret line="314" column="16" lean-forward="false" selection-start-line="314" selection-start-column="16" selection-end-line="314" selection-end-column="16" />
               <folding />
             </state>
@@ -169,7 +113,7 @@
             <state relative-caret-position="650">
               <caret line="13" column="27" lean-forward="false" selection-start-line="13" selection-start-column="27" selection-end-line="13" selection-end-column="27" />
               <folding>
-                <marker date="1520663709809" expanded="true" signature="101:267" ph="val" />
+                <marker date="1521416357396" expanded="true" signature="101:267" ph="val" />
               </folding>
             </state>
           </provider>
@@ -273,10 +217,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="AndroidView" />
-      <pane id="PackagesPane" />
-      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -288,6 +230,8 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -710,7 +654,14 @@
       <option name="project" value="LOCAL" />
       <updated>1520913886378</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Basic Agree Passing">
+      <created>1521416261693</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1521416261693</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -793,7 +744,8 @@
     <MESSAGE value="Leader election completed" />
     <MESSAGE value="Leader election and splitvotes" />
     <MESSAGE value="Working code" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working code" />
+    <MESSAGE value="Basic Agree Passing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Basic Agree Passing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -875,7 +827,7 @@
         <state relative-caret-position="500">
           <caret line="20" column="16" lean-forward="false" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="16" />
           <folding>
-            <marker date="1520663709809" expanded="true" signature="101:267" ph="val" />
+            <marker date="1521416357396" expanded="true" signature="101:267" ph="val" />
           </folding>
         </state>
       </provider>
@@ -990,7 +942,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1000">
           <caret line="20" column="0" lean-forward="false" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1068,7 +1019,7 @@
         <state relative-caret-position="650">
           <caret line="13" column="27" lean-forward="false" selection-start-line="13" selection-start-column="27" selection-end-line="13" selection-end-column="27" />
           <folding>
-            <marker date="1520663709809" expanded="true" signature="101:267" ph="val" />
+            <marker date="1521416357396" expanded="true" signature="101:267" ph="val" />
           </folding>
         </state>
       </provider>
@@ -1136,7 +1087,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-15">
           <caret line="13" column="78" lean-forward="false" selection-start-line="13" selection-start-column="69" selection-end-line="13" selection-end-column="89" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1174,7 +1124,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4050">
+        <state relative-caret-position="50">
           <caret line="314" column="16" lean-forward="false" selection-start-line="314" selection-start-column="16" selection-end-line="314" selection-end-column="16" />
           <folding />
         </state>
