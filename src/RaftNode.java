@@ -149,7 +149,7 @@ public class RaftNode implements MessageHandling, Runnable {
                     }
 
                     try {
-                        Thread.sleep(180);
+                        Thread.sleep(110);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -216,6 +216,9 @@ public class RaftNode implements MessageHandling, Runnable {
                         if(message != null && message.getType() == MessageType.CheckAlive) {
                             alives.add(i);
                         }
+                        else {
+
+                        }
                     } catch (RemoteException e) {
                         e.printStackTrace();
                     }
@@ -243,10 +246,16 @@ public class RaftNode implements MessageHandling, Runnable {
                                     this.votesGained++;
                                 }
 
-                                if(this.votesGained > this.num_peers/2 -1 ) {
-                                    this.setState(Constants.Roles.LEADER);
-                                    resetVotes();
-                                    break;
+                                if(this.votesGained > (this.num_peers)/2 - 1  ) {
+                                    if(alives.contains(this.id)) {
+                                        this.setState(Constants.Roles.LEADER);
+                                        resetVotes();
+                                        break;
+
+                                    }
+//                                    else {
+//                                        this.setState(Constants.Roles.FOLLOWER);
+//                                    }
                                 }
                             }
                         }
@@ -335,12 +344,11 @@ public class RaftNode implements MessageHandling, Runnable {
 
         long time = System.currentTimeMillis();
 
-        while(System.currentTimeMillis() - time < 2000) {}
+        while(System.currentTimeMillis() - time < 500) {}
 
-        System.out.println( "Start called with command - "+ command + ". Current leader for term "+ this.currentTerm+" is "+ Globals.currentLeaderId +". " +
-                "Start called for id - " + this.id  + " is leader = " + this.isLeader);
+        System.out.println( "Start called with command - "+ command + ". Start called for id - " + this.id  + " is leader = " + this.isLeader);
 
-        if(this.isLeader) {
+        if(this.id == Globals.currentLeaderId) {
 
             LogEntries lastLogEntry = null; //to verify last term and index
 
@@ -405,7 +413,8 @@ public class RaftNode implements MessageHandling, Runnable {
                 max_dest_id--;
             }
 
-            if(totalReplied >= (this.num_peers - 1) / 2) {
+            //int majority = (((this.num_peers - 1) % 2) == 0 ? this.num_peers/2 + 1 : );
+            if(totalReplied >= (this.num_peers-1)/2 + 1) {
 
                 this.commitIndex++;
 
@@ -464,21 +473,22 @@ public class RaftNode implements MessageHandling, Runnable {
 //                    }
             }
             else {
-                this.logEntries.remove(this.logEntries.size()-1);
+                //this.logEntries.remove(this.logEntries.size()-1);
             }
+            return new StartReply(this.logEntries.size(), appendEntriesArgs.term, true);
         }
 
-        return new StartReply(this.commitIndex, this.currentTerm, this.getStateReply.isLeader);
+        return new StartReply(this.logEntries.size(), this.currentTerm, false);
     }
 
 
     void printLog(LogEntries entries[]) {
 
-        System.out.println("\n");
         System.out.println(" For ID - " + this.id);
         for(LogEntries entry  : entries) {
             System.out.println( " Index : "  + entry.index + "\n" + " Term : " + entry.term + "\n" + " Command : " + entry.command);
         }
+        System.out.println("-------------------------------------------------------");
 
     }
 
@@ -512,6 +522,7 @@ public class RaftNode implements MessageHandling, Runnable {
                 for( int i = this.commitIndex; i < this.logEntries.size(); i++) {
 
                     this.commitIndex++;
+
                     ApplyMsg applyMsg =  new ApplyMsg(this.id, this.commitIndex, updateCommits.logEntries.get(i).command, true, null);
 
                     try {
@@ -520,6 +531,7 @@ public class RaftNode implements MessageHandling, Runnable {
                                 +"\n Command : " + updateCommits.logEntries.get(i).command);
 
                         lib.applyChannel(applyMsg);
+                        System.out.println("End of applying state \n");
 
                     }
 
@@ -657,41 +669,38 @@ public class RaftNode implements MessageHandling, Runnable {
                             this.logEntries.size() + ". Adding entry to it.");
 
                     if( lastEntry == null) {
+                        System.out.println("No entry present. adding entry");
 
                         //this.logEntries = new ArrayList<LogEntries>(Arrays.asList(appendEntriesArgs.entries));
 
-                        printLog(this.logEntries.toArray(new LogEntries[this.logEntries.size()]));
-
                         this.logEntries.add(entry);
 
-                        System.out.println( " Current log size of peer number " + this.id + " is " + this.logEntries.size() + ". After adding entry.");
 
                         AppendEntriesReply reply = new AppendEntriesReply(appendEntriesArgs.term,true);
-
+                        printLog(this.logEntries.toArray(new LogEntries[this.logEntries.size()]));
+                        System.out.println("End of No entry present. adding entry");
                         return getMessageBundled(reply, this.id, message.getSrc());
 
                     }
                     else {
 
                         if(lastTerm == lastEntry.term && lastIndex == lastEntry.index) {
-
+                            System.out.println("last index and term matched. adding entry");
                             //this.logEntries = new ArrayList<LogEntries>(Arrays.asList(appendEntriesArgs.entries));
-
-                            printLog(this.logEntries.toArray(new LogEntries[this.logEntries.size()]));
 
                             this.logEntries.add(entry);
 
-                            System.out.println( " Current log size of peer number " + this.id + " is " + this.logEntries.size() + ". After adding entry.");
+                           // System.out.println( " Current log size of peer number " + this.id + " is " + this.logEntries.size() + ". After adding entry.");
 
                             AppendEntriesReply reply = new AppendEntriesReply(appendEntriesArgs.term,true);
-
+                            printLog(this.logEntries.toArray(new LogEntries[this.logEntries.size()]));
+                            System.out.println("End of last index and term matched. adding entry");
                             return getMessageBundled(reply, this.id, message.getSrc());
 
                         }
                         else {
                             //TODO: resolve last term and index
-                            System.out.println("  yaaaaaaaaahoooooo 8658765876587658765\n\n\n\n\n\n\n " );
-
+                            System.out.println("Last index and term does not match. adding entry");
                             this.logEntries = new ArrayList<LogEntries>(Arrays.asList(appendEntriesArgs.entries));
 
 //                            for( int i = this.commitIndex; i < this.logEntries.size(); i++) {
@@ -718,7 +727,9 @@ public class RaftNode implements MessageHandling, Runnable {
 
 
                             AppendEntriesReply reply = new AppendEntriesReply(appendEntriesArgs.term,true);
+
                             printLog(this.logEntries.toArray(new LogEntries[this.logEntries.size()]));
+                            System.out.println("end of Last index and term does not match. adding entry");
                             return getMessageBundled(reply, this.id, message.getSrc());
 
                         }
