@@ -61,7 +61,7 @@ public class RaftNode implements MessageHandling, Runnable {
             this.hasVoted    = false;
 
             this.getStateReply   = new GetStateReply(0, false);
-            this.heartBeatTimeout = getRandom(250, 450);
+            this.heartBeatTimeout = getRandom(500, 900);
             this.votesGained     = 0;
             this.lastHeartBeat   = System.currentTimeMillis();
             this.electionTimeout = this.heartBeatTimeout;
@@ -162,7 +162,7 @@ public class RaftNode implements MessageHandling, Runnable {
 
                     long time = System.currentTimeMillis();
 
-                    while(System.currentTimeMillis() - time < 180) {}
+                    while(System.currentTimeMillis() - time < 200) {}
 
                 }
 
