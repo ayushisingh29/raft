@@ -7,6 +7,7 @@
     <list default="true" id="5b8f14a4-e065-493e-94bd-889c850bd581" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/RaftNode.java" afterPath="$PROJECT_DIR$/src/RaftNode.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/lib/MessageType.java" afterPath="$PROJECT_DIR$/src/lib/MessageType.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,17 +28,12 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="600">
-      <file leaf-file-name="RaftNode.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="RaftNode.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="12107">
-              <caret line="569" column="15" lean-forward="false" selection-start-line="569" selection-start-column="15" selection-end-line="569" selection-end-column="15" />
-              <folding>
-                <marker date="1521609896255" expanded="true" signature="24657:24733" ph="/**...*/" />
-                <marker date="1521609896255" expanded="true" signature="24795:25013" ph="{...}" />
-                <marker date="1521609896255" expanded="true" signature="24898:24906" ph="val" />
-                <marker date="1521609896255" expanded="true" signature="24946:24949" ph=".first()" />
-              </folding>
+            <state relative-caret-position="6057">
+              <caret line="544" column="15" lean-forward="false" selection-start-line="544" selection-start-column="15" selection-end-line="544" selection-end-column="15" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -52,7 +48,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RaftTest.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="RaftTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/RaftTest.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1234">
@@ -211,8 +207,8 @@
         <option value="$PROJECT_DIR$/src/lib/RequestVoteArgs.java" />
         <option value="$PROJECT_DIR$/src/lib/Globals.java" />
         <option value="$PROJECT_DIR$/src/Globals.java" />
-        <option value="$PROJECT_DIR$/src/RaftNode.java" />
         <option value="$PROJECT_DIR$/src/RaftTest.java" />
+        <option value="$PROJECT_DIR$/src/RaftNode.java" />
       </list>
     </option>
   </component>
@@ -721,11 +717,19 @@
       <option name="project" value="LOCAL" />
       <updated>1521601909401</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="AppendEntriesArgs fixed">
+      <created>1521610332096</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1521610332096</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-14" y="-14" width="3868" height="2098" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -739,7 +743,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19978459" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24270834" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24270834" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -806,7 +810,8 @@
     <MESSAGE value="Basic Agree Passing" />
     <MESSAGE value="Basic Agree Passing - Made log matching in previous entry" />
     <MESSAGE value="Fail Agree Passing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fail Agree Passing" />
+    <MESSAGE value="AppendEntriesArgs fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="AppendEntriesArgs fixed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -879,12 +884,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1521609896255" expanded="true" signature="24657:24733" ph="/**...*/" />
-            <marker date="1521609896255" expanded="true" signature="24795:25013" ph="{...}" />
-            <marker date="1521609896255" expanded="true" signature="24898:24906" ph="val" />
-            <marker date="1521609896255" expanded="true" signature="24946:24949" ph=".first()" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -962,12 +962,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="7350">
           <caret line="147" column="53" lean-forward="false" selection-start-line="147" selection-start-column="53" selection-end-line="147" selection-end-column="53" />
-          <folding>
-            <marker date="1521609896255" expanded="true" signature="24657:24733" ph="/**...*/" />
-            <marker date="1521609896255" expanded="true" signature="24795:25013" ph="{...}" />
-            <marker date="1521609896255" expanded="true" signature="24898:24906" ph="val" />
-            <marker date="1521609896255" expanded="true" signature="24946:24949" ph=".first()" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1213,23 +1208,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="12107">
-          <caret line="569" column="15" lean-forward="false" selection-start-line="569" selection-start-column="15" selection-end-line="569" selection-end-column="15" />
-          <folding>
-            <marker date="1521609896255" expanded="true" signature="24657:24733" ph="/**...*/" />
-            <marker date="1521609896255" expanded="true" signature="24795:25013" ph="{...}" />
-            <marker date="1521609896255" expanded="true" signature="24898:24906" ph="val" />
-            <marker date="1521609896255" expanded="true" signature="24946:24949" ph=".first()" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/RaftTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1234">
           <caret line="655" column="0" lean-forward="false" selection-start-line="655" selection-start-column="0" selection-end-line="655" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6057">
+          <caret line="544" column="15" lean-forward="false" selection-start-line="544" selection-start-column="15" selection-end-line="544" selection-end-column="15" />
           <folding />
         </state>
       </provider>

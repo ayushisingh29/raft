@@ -61,7 +61,7 @@ public class RaftNode implements MessageHandling, Runnable {
             this.hasVoted    = false;
 
             this.getStateReply   = new GetStateReply(0, false);
-            this.heartBeatTimeout = getRandom(500, 900);
+            this.heartBeatTimeout = getRandom(250, 450);
             this.votesGained     = 0;
             this.lastHeartBeat   = System.currentTimeMillis();
             this.electionTimeout = this.heartBeatTimeout;
@@ -162,12 +162,11 @@ public class RaftNode implements MessageHandling, Runnable {
 
                     long time = System.currentTimeMillis();
 
-                    while(System.currentTimeMillis() - time < 200) {}
+                    while(System.currentTimeMillis() - time < 180) {}
 
                 }
 
             }
-
 
             if(this.isFollower) {
                 this.votesGained = 0;
@@ -192,8 +191,6 @@ public class RaftNode implements MessageHandling, Runnable {
                 this.getStateReply.term = this.currentTerm;
                 this.getStateReply.isLeader = false;
                 this.votesGained = 0;
-
-                //while(System.currentTimeMillis() - this.lastCandidateTime < this.electionTimeout) {}
 
                 this.currentTerm++;
 
@@ -290,7 +287,7 @@ public class RaftNode implements MessageHandling, Runnable {
 
                     this.commitIndex++;
 
-                    ApplyMsg applyMsg =  new ApplyMsg(this.id, this.commitIndex, updateCommits.logEntries.get(i).command, true, null);
+                    ApplyMsg applyMsg =  new ApplyMsg(this.id, this.commitIndex, updateCommits.logEntries.get(i).command, false, null);
 
                     try {
 
@@ -308,16 +305,6 @@ public class RaftNode implements MessageHandling, Runnable {
 
                 }
 
-                return null;
-
-            }
-
-            if (type == MessageType.CheckAlive) {
-                return new Message(MessageType.CheckAlive, this.id, message.getSrc(), null);
-            }
-
-            if (type == MessageType.InvalidateVote) {
-                this.hasVoted = false;
                 return null;
             }
 
@@ -497,18 +484,6 @@ public class RaftNode implements MessageHandling, Runnable {
         return null;
     }
 
-
-    private void resetVotes() {
-
-        for(int i = 0; i < this.num_peers; i++) {
-            try {
-                Message m = lib.sendMessage(new Message(MessageType.InvalidateVote, this.id, i, null));
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private Message getMessageBundled(Object o, int src_id, int dest_id) {
 
         try {
@@ -575,15 +550,9 @@ public class RaftNode implements MessageHandling, Runnable {
 
         AppendEntriesArgs appendEntriesArgs = null;
 
-        long time = System.currentTimeMillis();
-//
-//        while(System.currentTimeMillis() - time < 250) {
-//            ////System.out.println("  /\\"+"\n ||\n ||\n ||\n _____");
-//        }
-
-        System.out.println( "Start called with command - "+ command + ". Start called for id - " + this.id  + " is leader = " + this.getStateReply.isLeader);
-
         if(this.getStateReply.isLeader) {
+
+            System.out.println( "Start called with command - "+ command + ". Start called for id - " + this.id  + " is leader = " + this.getStateReply.isLeader);
 
             LogEntries lastLogEntry = null; //to verify last term and index
 
@@ -654,7 +623,7 @@ public class RaftNode implements MessageHandling, Runnable {
 
                     this.commitIndex++;
 
-                    ApplyMsg applyMsg =  new ApplyMsg(this.id, this.commitIndex, this.logEntries.get(i).command, true, null);
+                    ApplyMsg applyMsg =  new ApplyMsg(this.id, this.commitIndex, this.logEntries.get(i).command, false, null);
 
                     try {
 
