@@ -10,6 +10,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 public class RaftNode implements MessageHandling, Runnable {
+    private long lastCandidateTime;
     public int id;
     private static TransportLib lib;
     private int num_peers;
@@ -34,10 +35,11 @@ public class RaftNode implements MessageHandling, Runnable {
     FileHandler fh;
 
     private GetStateReply getStateReply;
-    private int electionTimeout;
-    private long heartBeatInterval;
+    private int heartBeatTimeout;
+    private long electionTimeout;
     private boolean hasVoted;
     private int votesGained;
+    private int lastVotedTerm;
 
 
 
@@ -59,11 +61,13 @@ public class RaftNode implements MessageHandling, Runnable {
             this.hasVoted    = false;
 
             this.getStateReply   = new GetStateReply(0, false);
-            this.electionTimeout = getRandom(500, 900);
+            this.heartBeatTimeout = getRandom(500, 900);
             this.votesGained     = 0;
             this.lastHeartBeat   = System.currentTimeMillis();
-            this.heartBeatInterval = 0;
+            this.electionTimeout = this.heartBeatTimeout;
             this.logEntries        = new ArrayList<>();
+            this.lastCandidateTime = System.currentTimeMillis();
+            this.lastVotedTerm     = 0;
 
             lib = new TransportLib(port1, id, this);
             Thread leaderElectorThread = new Thread(this);
@@ -108,29 +112,6 @@ public class RaftNode implements MessageHandling, Runnable {
     }
 
 
-//    ArrayList<Integer> getAlives() {
-//
-//        ArrayList<Integer> alives = new ArrayList<>();
-//
-//        for(int i = 0 ; i < this.num_peers; i++) {
-//
-//            try {
-//
-//                Message message = lib.sendMessage(new Message(MessageType.CheckAlive, this.id, i, null));
-//
-//                if(message != null && message.getType() == MessageType.CheckAlive) {
-//                    alives.add(i);
-//                }
-//
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return alives;
-//
-//    }
-
-
     /**
      * Thread that kicks off leader election
      */
@@ -141,20 +122,25 @@ public class RaftNode implements MessageHandling, Runnable {
 
             if(this.isLeader) {
 
-                //Globals.currentLeaderId = this.id;
+                this.setState(Constants.Roles.LEADER);
 
-                //System.out.println(" \n\n Leader - " + this.id + " for term " + this.currentTerm);
+                this.getStateReply.term = this.currentTerm;
+                this.getStateReply.isLeader =  true;
 
                 while(this.isLeader) {
 
-                    this.resetVotes();
-                    this.getStateReply.term = this.currentTerm;
-                    this.getStateReply.isLeader =  true;
+                    int lastLogIndex = -1;
+                    int lastLogTerm  = -1;
 
-                    this.setState(Constants.Roles.LEADER);
+                    if(this.logEntries.size() != 0) {
 
+                        lastLogIndex = this.logEntries.get(this.logEntries.size()-1).index;
+                        lastLogTerm  = this.logEntries.get(this.logEntries.size()-1).term;
 
-                    AppendEntriesArgs appendEntriesArgs = new AppendEntriesArgs(this.currentTerm, this.id, -1, -1, null, -1);
+                    }
+
+                    AppendEntriesArgs appendEntriesArgs = new AppendEntriesArgs(this.currentTerm, this.id,
+                            lastLogIndex, lastLogTerm, null, -1);
 
                     int max_dest_id = this.num_peers-1;
 
@@ -175,7 +161,8 @@ public class RaftNode implements MessageHandling, Runnable {
                     }
 
                     long time = System.currentTimeMillis();
-                    while(System.currentTimeMillis() - time < 400) {}
+
+                    while(System.currentTimeMillis() - time < 200) {}
 
                 }
 
@@ -183,30 +170,35 @@ public class RaftNode implements MessageHandling, Runnable {
 
 
             if(this.isFollower) {
+                this.votesGained = 0;
+                this.setState(Constants.Roles.FOLLOWER);
+                this.getStateReply.term = this.currentTerm;
+                this.getStateReply.isLeader = false;
 
                 while(this.isFollower) {
 
-                    this.getStateReply.term = this.currentTerm;
-                    this.getStateReply.isLeader = false;
-                    this.setState(Constants.Roles.FOLLOWER);
-
-                    if((System.currentTimeMillis() - this.lastHeartBeat) > this.electionTimeout)  {
+                    if((System.currentTimeMillis() - this.lastHeartBeat) > this.heartBeatTimeout)  {
 
                         this.setState(Constants.Roles.CANDIDATE);
-
                         break;
 
                     }
                 }
             }
 
-            if(this.isCandidate) {
+            while(this.isCandidate) {
 
-                this.currentTerm++;
-                this.votesGained = 0;
+                this.setState(Constants.Roles.CANDIDATE);
                 this.getStateReply.term = this.currentTerm;
                 this.getStateReply.isLeader = false;
-                this.setState(Constants.Roles.CANDIDATE);
+                this.votesGained = 0;
+
+                //while(System.currentTimeMillis() - this.lastCandidateTime < this.electionTimeout) {}
+
+                this.currentTerm++;
+
+                this.lastCandidateTime = System.currentTimeMillis();
+
 
                 Object obj = null;
                 ObjectInputStream is = null;
@@ -214,7 +206,6 @@ public class RaftNode implements MessageHandling, Runnable {
                 byte[] byteMessage = null;
                 ByteArrayInputStream in = null;
 
-                List<Integer> alives = new ArrayList<>();
 
                 int lastLogIndex = -1;
                 int lastLogTerm  = -1;
@@ -226,13 +217,15 @@ public class RaftNode implements MessageHandling, Runnable {
 
                 }
 
+                if(this.lastVotedTerm < this.currentTerm) {
+                    this.votesGained++;
+//                    this.hasVoted = true;
+                    this.lastVotedTerm = this.currentTerm;
+                }
+
                 RequestVoteArgs requestVoteArgs = new RequestVoteArgs(this.currentTerm, this.id, lastLogIndex, lastLogTerm);
 
-//                alives = getAlives();
-
-                //              if((alives.size()-1) > ((this.num_peers)/2)-1) {
-
-                for(int max_dest_id1 = 0; max_dest_id1 < this.num_peers; max_dest_id1++) {//: alives) {
+                for(int max_dest_id1 = 0; max_dest_id1 < this.num_peers; max_dest_id1++) {
 
                     try {
 
@@ -254,12 +247,12 @@ public class RaftNode implements MessageHandling, Runnable {
                                     this.votesGained++;
                                 }
 
-                                if(this.votesGained  > (this.num_peers)/2 - 1) {
-                                    //              if(alives.contains(this.id)) {
+                                if(this.votesGained  > (this.num_peers)/2) {
 
+                                    this.votesGained = 0;
                                     this.setState(Constants.Roles.LEADER);
-                                    resetVotes();
-                                    break;
+                                    //resetVotes();
+                                    //break;
 
                                 }
                             }
@@ -268,234 +261,8 @@ public class RaftNode implements MessageHandling, Runnable {
                         e.printStackTrace();
                     }
                 }
-
-                //            }
-
             }
         }
-    }
-
-    private void resetVotes() {
-
-        for(int i = 0; i < this.num_peers; i++) {
-            try {
-                Message m = lib.sendMessage(new Message(MessageType.InvalidateVote, this.id, i, null));
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private Message getMessageBundled(Object o, int src_id, int dest_id) {
-
-        try {
-            RequestVoteArgs    requestVoteArgs    = null;
-            RequestVoteReply   requestVoteReply   = null;
-            AppendEntriesReply appendEntriesReply = null;
-            AppendEntriesArgs  appendEntriesArgs  = null;
-            UpdateCommits      updateCommits      = null;
-
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ObjectOutputStream out = null;
-            out = new ObjectOutputStream(byteArrayOutputStream);
-
-            MessageType msgType = null;
-
-            if(o instanceof RequestVoteArgs) {
-                requestVoteArgs = (RequestVoteArgs) o;
-                out.writeObject(requestVoteArgs);
-                msgType = MessageType.RequestVoteArgs;
-            }
-            if(o instanceof RequestVoteReply) {
-                requestVoteReply = (RequestVoteReply) o;
-                out.writeObject(requestVoteReply);
-                msgType = MessageType.RequestVoteReply;
-            }
-            if(o instanceof AppendEntriesArgs) {
-                appendEntriesArgs = (AppendEntriesArgs) o;
-                out.writeObject(appendEntriesArgs);
-                msgType = MessageType.AppendEntriesArgs;
-            }
-            if(o instanceof AppendEntriesReply) {
-                appendEntriesReply = (AppendEntriesReply) o;
-                out.writeObject(appendEntriesReply);
-                msgType = MessageType.AppendEntriesReply;
-            }
-            if(o instanceof UpdateCommits) {
-                updateCommits = (UpdateCommits) o;
-                out.writeObject(updateCommits);
-                msgType = MessageType.UpdateCommits;
-            }
-            out.flush();
-
-            byte[] byteMessage = byteArrayOutputStream.toByteArray();
-
-            Message message = new Message(msgType , src_id , dest_id,  byteMessage);
-
-
-            return message;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-
-    /*
-     *call back.
-     */
-
-    @Override
-    public StartReply start(int command) {
-
-        AppendEntriesArgs appendEntriesArgs = null;
-
-        long time = System.currentTimeMillis();
-
-        while(System.currentTimeMillis() - time < 500) {
-            ////System.out.println("  /\\"+"\n ||\n ||\n ||\n _____");
-        }
-
-        System.out.println( "Start called with command - "+ command + ". Start called for id - " + this.id  + " is leader = " + this.getStateReply.isLeader);
-
-        if(this.getStateReply.isLeader) {
-
-            LogEntries lastLogEntry = null; //to verify last term and index
-
-            if( this.logEntries.size() == 0) {
-
-                lastLogEntry = new LogEntries(-1, -1 , Integer.MIN_VALUE);
-
-            }
-
-            else {
-
-                lastLogEntry = this.logEntries.get(this.logEntries.size() - 1);
-
-            }
-
-            LogEntries logEntry = new LogEntries(this.logEntries.size()+1, this.currentTerm, command);
-
-            this.logEntries.add(logEntry);
-
-            int max_dest_id  = this.num_peers-1;
-
-            ArrayList<Integer> replied = new ArrayList<>();
-
-            int totalReplied = 0;
-
-            while(max_dest_id >= 0){
-
-                if(max_dest_id != this.id) {
-
-                    try {
-
-                        appendEntriesArgs = new AppendEntriesArgs(this.currentTerm,
-                                this.id, lastLogEntry.index, lastLogEntry.term,
-                                this.logEntries.toArray(new LogEntries[logEntries.size()]), this.commitIndex);
-
-                        Message message = lib.sendMessage(getMessageBundled(appendEntriesArgs, this.id, max_dest_id));
-
-                        if(message != null) {
-
-                            byte[] byteMessage = message.getBody();
-                            ByteArrayInputStream in = new ByteArrayInputStream(byteMessage);
-                            ObjectInputStream is = new ObjectInputStream(in);
-                            Object obj = is.readObject();
-
-                            AppendEntriesReply reply = (AppendEntriesReply) obj;
-
-                            if(reply.success) {
-                                replied.add(message.getSrc());
-                                totalReplied++;
-                            }
-
-                        }
-
-                    }
-
-                    catch (IOException | ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-
-                max_dest_id--;
-            }
-            
-            if(totalReplied >= (this.num_peers-1)/2 + 1) {
-
-                for( int i = this.commitIndex; i < this.logEntries.size(); i++) {
-
-                    this.commitIndex++;
-
-                    ApplyMsg applyMsg =  new ApplyMsg(this.id, this.commitIndex, this.logEntries.get(i).command, true, null);
-
-                    try {
-
-                        System.out.println(" Applying state - \n Id - "  + this.id + "\n Commit Index - " + this.commitIndex
-                                +"\n Command : " + this.logEntries.get(i).command);
-
-                        lib.applyChannel(applyMsg);
-                        System.out.println("End of applying state \n");
-
-                    }
-
-                    catch(Exception ex) {
-                        ex.printStackTrace();
-                    }
-
-                }
-
-                printLog(this.logEntries.toArray(new LogEntries[this.logEntries.size()]));
-
-                for(int dest : replied) {
-
-                    if (dest != this.id) {
-
-                        //applyMsg = new ApplyMsg(dest, this.commitIndex, command, true, null);
-
-                        //lib.applyChannel(applyMsg);
-
-                        try {
-                            UpdateCommits updateCommits = new UpdateCommits(this.logEntries);
-                            Message m = lib.sendMessage(getMessageBundled(updateCommits, this.id, dest));
-
-                        } catch (RemoteException e) {
-
-                            e.printStackTrace();
-
-                        }
-
-                    }
-                }
-            }
-            else {
-                //this.logEntries.remove(this.logEntries.size()-1);
-            }
-            return new StartReply(this.logEntries.size(), appendEntriesArgs.term, true);
-        }
-
-        return new StartReply(this.logEntries.size(), this.currentTerm, false);
-    }
-
-
-    void printLog(LogEntries entries[]) {
-
-        System.out.println(" For ID - " + this.id);
-        for(LogEntries entry  : entries) {
-            System.out.println( " Index : "  + entry.index + "\n" + " Term : " + entry.term + "\n" + " Command : " + entry.command);
-        }
-        System.out.println("-------------------------------------------------------");
-
-    }
-
-
-    @Override
-    public GetStateReply getState() {
-        return this.getStateReply;
     }
 
     @Override
@@ -577,28 +344,47 @@ public class RaftNode implements MessageHandling, Runnable {
 
                 if(lastLogTerm < requestVoteArgs.lastLogTerm) {
 
-                    if((requestVoteArgs.term > this.currentTerm) && (!this.hasVoted)) {
+                    if(this.lastVotedTerm < requestVoteArgs.term) {
 
-                        this.hasVoted = true;
+                        this.lastVotedTerm = requestVoteArgs.term;
+                        this.setState(Constants.Roles.FOLLOWER);
+                        this.votesGained = 0;
                         requestVoteReply = new RequestVoteReply(requestVoteArgs.term, true);
                         return getMessageBundled(requestVoteReply, message.getDest(), message.getSrc());
-                    }
 
+                    }
                 }
-                else if(lastLogTerm == requestVoteArgs.lastLogTerm) {
-                    if(lastLogIndex < requestVoteArgs.lastLogIndex && !this.hasVoted) {
 
-                        this.hasVoted = true;
+                else if(lastLogTerm == requestVoteArgs.lastLogTerm) {
+
+                    if(lastLogIndex < requestVoteArgs.lastLogIndex  && ( this.lastVotedTerm < requestVoteArgs.term)) {
+
+                        this.lastVotedTerm = requestVoteArgs.term;
+                        this.setState(Constants.Roles.FOLLOWER);
+                        this.votesGained = 0;
                         requestVoteReply = new RequestVoteReply(requestVoteArgs.term, true);
                         return getMessageBundled(requestVoteReply, message.getDest(), message.getSrc());
+
                     }
-                    else if(lastLogIndex == requestVoteArgs.lastLogIndex && !this.hasVoted) {
+
+                    else if(lastLogIndex == requestVoteArgs.lastLogIndex && (this.lastVotedTerm < requestVoteArgs.term)) {
                         if(requestVoteArgs.term > this.currentTerm) {
-                            this.hasVoted = true;
+
+                            this.lastVotedTerm = requestVoteArgs.term;
+                            this.setState(Constants.Roles.FOLLOWER);
+                            this.votesGained = 0;
                             requestVoteReply = new RequestVoteReply(requestVoteArgs.term, true);
                             return getMessageBundled(requestVoteReply, message.getDest(), message.getSrc());
+
                         }
                     }
+                }
+
+                else {
+
+                    requestVoteReply = new RequestVoteReply(requestVoteArgs.term, false);
+                    return getMessageBundled(requestVoteReply, message.getDest(), message.getSrc());
+
                 }
 
             } else if (type == MessageType.AppendEntriesArgs) {
@@ -628,6 +414,22 @@ public class RaftNode implements MessageHandling, Runnable {
 
                     int lastTerm  = appendEntriesArgs.prevLogTerm;
                     int lastIndex = appendEntriesArgs.prevLogIndex;
+
+                    if (this.logEntries.size() != 0) {
+
+                        if(lastTerm < this.logEntries.get(this.logEntries.size() - 1).term) {
+                            return null;
+                        }
+
+                        else if(lastTerm == this.logEntries.get(this.logEntries.size() - 1).term){
+
+                            if(this.commitIndex > appendEntriesArgs.leaderCommit) {
+                                return null;
+                            }
+                        }
+
+                    }
+
 
                     LogEntries lastEntry = null;
 
@@ -673,7 +475,7 @@ public class RaftNode implements MessageHandling, Runnable {
 
                         }
                         else {
-                            //TODO: resolve last term and index
+
                             System.out.println("Last index and term does not match. adding entry");
                             this.logEntries = new ArrayList<LogEntries>(Arrays.asList(appendEntriesArgs.entries));
 
@@ -694,6 +496,231 @@ public class RaftNode implements MessageHandling, Runnable {
         }
         return null;
     }
+
+
+    private void resetVotes() {
+
+        for(int i = 0; i < this.num_peers; i++) {
+            try {
+                Message m = lib.sendMessage(new Message(MessageType.InvalidateVote, this.id, i, null));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private Message getMessageBundled(Object o, int src_id, int dest_id) {
+
+        try {
+            RequestVoteArgs    requestVoteArgs    = null;
+            RequestVoteReply   requestVoteReply   = null;
+            AppendEntriesReply appendEntriesReply = null;
+            AppendEntriesArgs  appendEntriesArgs  = null;
+            UpdateCommits      updateCommits      = null;
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream out = null;
+            out = new ObjectOutputStream(byteArrayOutputStream);
+
+            MessageType msgType = null;
+
+            if(o instanceof RequestVoteArgs) {
+                requestVoteArgs = (RequestVoteArgs) o;
+                out.writeObject(requestVoteArgs);
+                msgType = MessageType.RequestVoteArgs;
+            }
+            if(o instanceof RequestVoteReply) {
+                requestVoteReply = (RequestVoteReply) o;
+                out.writeObject(requestVoteReply);
+                msgType = MessageType.RequestVoteReply;
+            }
+            if(o instanceof AppendEntriesArgs) {
+                appendEntriesArgs = (AppendEntriesArgs) o;
+                out.writeObject(appendEntriesArgs);
+                msgType = MessageType.AppendEntriesArgs;
+            }
+            if(o instanceof AppendEntriesReply) {
+                appendEntriesReply = (AppendEntriesReply) o;
+                out.writeObject(appendEntriesReply);
+                msgType = MessageType.AppendEntriesReply;
+            }
+            if(o instanceof UpdateCommits) {
+                updateCommits = (UpdateCommits) o;
+                out.writeObject(updateCommits);
+                msgType = MessageType.UpdateCommits;
+            }
+            out.flush();
+
+            byte[] byteMessage = byteArrayOutputStream.toByteArray();
+
+            Message message = new Message(msgType , src_id , dest_id,  byteMessage);
+
+
+            return message;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    /*
+     *call back.
+     */
+
+    @Override
+    public StartReply start(int command) {
+
+        AppendEntriesArgs appendEntriesArgs = null;
+
+        long time = System.currentTimeMillis();
+//
+//        while(System.currentTimeMillis() - time < 250) {
+//            ////System.out.println("  /\\"+"\n ||\n ||\n ||\n _____");
+//        }
+
+        System.out.println( "Start called with command - "+ command + ". Start called for id - " + this.id  + " is leader = " + this.getStateReply.isLeader);
+
+        if(this.getStateReply.isLeader) {
+
+            LogEntries lastLogEntry = null; //to verify last term and index
+
+            if( this.logEntries.size() == 0) {
+
+                lastLogEntry = new LogEntries(-1, -1 , Integer.MIN_VALUE);
+
+            }
+
+            else {
+
+                lastLogEntry = this.logEntries.get(this.logEntries.size() - 1);
+
+            }
+
+            LogEntries logEntry = new LogEntries(this.logEntries.size()+1, this.currentTerm, command);
+
+            this.logEntries.add(logEntry);
+
+            int max_dest_id  = this.num_peers-1;
+
+            ArrayList<Integer> replied = new ArrayList<>();
+
+            int totalReplied = 0;
+
+            while(max_dest_id >= 0){
+
+                if(max_dest_id != this.id) {
+
+                    try {
+
+                        appendEntriesArgs = new AppendEntriesArgs(this.currentTerm,
+                                this.id, lastLogEntry.index, lastLogEntry.term,
+                                this.logEntries.toArray(new LogEntries[logEntries.size()]), this.commitIndex);
+
+                        Message message = lib.sendMessage(getMessageBundled(appendEntriesArgs, this.id, max_dest_id));
+
+                        if(message != null) {
+
+                            byte[] byteMessage = message.getBody();
+                            ByteArrayInputStream in = new ByteArrayInputStream(byteMessage);
+                            ObjectInputStream is = new ObjectInputStream(in);
+                            Object obj = is.readObject();
+
+                            AppendEntriesReply reply = (AppendEntriesReply) obj;
+
+                            if(reply.success) {
+                                replied.add(message.getSrc());
+                                totalReplied++;
+                            }
+
+                        }
+
+                    }
+
+                    catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                max_dest_id--;
+            }
+
+            if(totalReplied >= (this.num_peers-1)/2 + 1) {
+
+                for( int i = this.commitIndex; i < this.logEntries.size(); i++) {
+
+                    this.commitIndex++;
+
+                    ApplyMsg applyMsg =  new ApplyMsg(this.id, this.commitIndex, this.logEntries.get(i).command, true, null);
+
+                    try {
+
+                        System.out.println(" Applying state - \n Id - "  + this.id + "\n Commit Index - " + this.commitIndex
+                                +"\n Command : " + this.logEntries.get(i).command);
+
+                        lib.applyChannel(applyMsg);
+                        System.out.println("End of applying state \n");
+
+                    }
+
+                    catch(Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+
+                printLog(this.logEntries.toArray(new LogEntries[this.logEntries.size()]));
+
+                for(int dest : replied) {
+
+                    if (dest != this.id) {
+
+                        //applyMsg = new ApplyMsg(dest, this.commitIndex, command, true, null);
+
+                        //lib.applyChannel(applyMsg);
+
+                        try {
+                            UpdateCommits updateCommits = new UpdateCommits(this.logEntries);
+                            Message m = lib.sendMessage(getMessageBundled(updateCommits, this.id, dest));
+
+                        } catch (RemoteException e) {
+
+                            e.printStackTrace();
+
+                        }
+
+                    }
+                }
+            }
+            else {
+                //this.logEntries.remove(this.logEntries.size()-1);
+            }
+            return new StartReply(this.logEntries.size(), appendEntriesArgs.term, true);
+        }
+
+        return new StartReply(this.logEntries.size(), this.currentTerm, false);
+    }
+
+
+    void printLog(LogEntries entries[]) {
+
+        System.out.println(" For ID - " + this.id);
+        for(LogEntries entry  : entries) {
+            System.out.println( " Index : "  + entry.index + "\n" + " Term : " + entry.term + "\n" + " Command : " + entry.command);
+        }
+        System.out.println("-------------------------------------------------------");
+
+    }
+
+
+    @Override
+    public GetStateReply getState() {
+        return this.getStateReply;
+    }
+
 
     //main function
 
