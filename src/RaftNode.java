@@ -552,7 +552,7 @@ public class RaftNode implements MessageHandling, Runnable {
 
         if(this.getStateReply.isLeader) {
 
-            System.out.println( "Start called with command - "+ command + ". Start called for id - " + this.id  + " is leader = " + this.getStateReply.isLeader);
+            //System.out.println( "Start called with command - "+ command + ". Start called for id - " + this.id  + " is leader = " + this.getStateReply.isLeader);
 
             LogEntries lastLogEntry = null; //to verify last term and index
 
