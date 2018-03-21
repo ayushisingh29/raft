@@ -30,7 +30,7 @@
       <file leaf-file-name="RaftNode.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="657">
+            <state relative-caret-position="50">
               <caret line="436" column="44" lean-forward="false" selection-start-line="436" selection-start-column="44" selection-end-line="436" selection-end-column="44" />
               <folding />
             </state>
@@ -50,7 +50,7 @@
       <file leaf-file-name="RaftTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/RaftTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1234">
+            <state relative-caret-position="32750">
               <caret line="655" column="0" lean-forward="false" selection-start-line="655" selection-start-column="0" selection-end-line="655" selection-end-column="0" />
               <folding />
             </state>
@@ -60,22 +60,10 @@
       <file leaf-file-name="Config.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Config.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8300">
+            <state relative-caret-position="8350">
               <caret line="167" column="20" lean-forward="false" selection-start-line="167" selection-start-column="20" selection-end-line="167" selection-end-column="20" />
               <folding>
-                <marker date="1521594353152" expanded="true" signature="4098:4143" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="4274:4377" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="4513:4679" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="4762:7093" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="7173:7669" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="7743:8106" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="8167:10125" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="10205:11958" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="12011:12072" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="13502:13688" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="13729:14076" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="14112:14172" ph="{...}" />
-                <marker date="1521594353152" expanded="true" signature="14222:14281" ph="{...}" />
+                <marker date="1521594353000" expanded="true" signature="4098:4143" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -127,7 +115,7 @@
             <state relative-caret-position="650">
               <caret line="13" column="27" lean-forward="false" selection-start-line="13" selection-start-column="27" selection-end-line="13" selection-end-column="27" />
               <folding>
-                <marker date="1521416357396" expanded="true" signature="101:267" ph="val" />
+                <marker date="1521416357000" expanded="true" signature="101:267" ph="val" />
               </folding>
             </state>
           </provider>
@@ -211,7 +199,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-10" />
     <option name="y" value="2" />
     <option name="width" value="1938" />
@@ -232,8 +220,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -251,7 +237,9 @@
         </subPane>
       </pane>
       <pane id="PackagesPane" />
+      <pane id="Scratches" />
       <pane id="AndroidView" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -716,7 +704,14 @@
       <option name="project" value="LOCAL" />
       <updated>1521601909401</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Final Working Code - Raft Implementation Ladies and Gentleman!">
+      <created>1521614810821</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1521614810821</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -724,7 +719,6 @@
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -732,10 +726,10 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.66944116" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32956383" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19978459" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19951633" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24270834" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12057292" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -743,32 +737,13 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39952436" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39952436" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32994792" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.66944116" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956383" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19951633" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2426869" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32889965" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
-      <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -821,7 +796,8 @@
     <MESSAGE value="Basic Agree Passing" />
     <MESSAGE value="Basic Agree Passing - Made log matching in previous entry" />
     <MESSAGE value="Fail Agree Passing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fail Agree Passing" />
+    <MESSAGE value="Final Working Code - Raft Implementation Ladies and Gentleman!" />
+    <option name="LAST_COMMIT_MESSAGE" value="Final Working Code - Raft Implementation Ladies and Gentleman!" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -903,7 +879,7 @@
         <state relative-caret-position="500">
           <caret line="20" column="16" lean-forward="false" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="16" />
           <folding>
-            <marker date="1521416357396" expanded="true" signature="101:267" ph="val" />
+            <marker date="1521416357000" expanded="true" signature="101:267" ph="val" />
           </folding>
         </state>
       </provider>
@@ -1031,19 +1007,7 @@
         <state relative-caret-position="22250">
           <caret line="445" column="0" lean-forward="false" selection-start-line="445" selection-start-column="0" selection-end-line="445" selection-end-column="0" />
           <folding>
-            <marker date="1521594353152" expanded="true" signature="4098:4143" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="4274:4377" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="4513:4679" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="4762:7093" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="7173:7669" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="7743:8106" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="8167:10125" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="10205:11958" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="12011:12072" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="13502:13688" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="13729:14076" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="14112:14172" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="14222:14281" ph="{...}" />
+            <marker date="1521594353000" expanded="true" signature="4098:4143" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -1182,7 +1146,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/RaftNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="657">
+        <state relative-caret-position="50">
           <caret line="436" column="44" lean-forward="false" selection-start-line="436" selection-start-column="44" selection-end-line="436" selection-end-column="44" />
           <folding />
         </state>
@@ -1193,14 +1157,14 @@
         <state relative-caret-position="650">
           <caret line="13" column="27" lean-forward="false" selection-start-line="13" selection-start-column="27" selection-end-line="13" selection-end-column="27" />
           <folding>
-            <marker date="1521416357396" expanded="true" signature="101:267" ph="val" />
+            <marker date="1521416357000" expanded="true" signature="101:267" ph="val" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/RaftTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1234">
+        <state relative-caret-position="32750">
           <caret line="655" column="0" lean-forward="false" selection-start-line="655" selection-start-column="0" selection-end-line="655" selection-end-column="0" />
           <folding />
         </state>
@@ -1208,22 +1172,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Config.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8300">
+        <state relative-caret-position="8350">
           <caret line="167" column="20" lean-forward="false" selection-start-line="167" selection-start-column="20" selection-end-line="167" selection-end-column="20" />
           <folding>
-            <marker date="1521594353152" expanded="true" signature="4098:4143" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="4274:4377" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="4513:4679" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="4762:7093" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="7173:7669" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="7743:8106" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="8167:10125" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="10205:11958" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="12011:12072" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="13502:13688" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="13729:14076" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="14112:14172" ph="{...}" />
-            <marker date="1521594353152" expanded="true" signature="14222:14281" ph="{...}" />
+            <marker date="1521594353000" expanded="true" signature="4098:4143" ph="{...}" />
           </folding>
         </state>
       </provider>

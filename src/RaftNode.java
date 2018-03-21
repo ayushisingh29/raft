@@ -291,11 +291,11 @@ public class RaftNode implements MessageHandling, Runnable {
 
                     try {
 
-                        System.out.println(" Applying state - \n Id - "  + this.id + "\n Commit Index - " + this.commitIndex
-                                +"\n Command : " + updateCommits.logEntries.get(i).command);
+                        //System.out.println(" Applying state - \n Id - "  + this.id + "\n Commit Index - " + this.commitIndex
+                          //      +"\n Command : " + updateCommits.logEntries.get(i).command);
 
                         lib.applyChannel(applyMsg);
-                        System.out.println("End of applying state \n");
+                        //System.out.println("End of applying state \n");
 
                     }
 
@@ -428,14 +428,14 @@ public class RaftNode implements MessageHandling, Runnable {
                     //if not a commit message
                     LogEntries entry = appendEntriesArgs.entries[appendEntriesArgs.entries.length-1];
 
-                    System.out.println( " Log entry requested from leader - " + message.getSrc() + " to peer "+ this.id +" for term - " +
-                            appendEntriesArgs.term + " and command " + appendEntriesArgs.entries[appendEntriesArgs.entries.length-1].command);
+//                    System.out.println( " Log entry requested from leader - " + message.getSrc() + " to peer "+ this.id +" for term - " +
+  //                          appendEntriesArgs.term + " and command " + appendEntriesArgs.entries[appendEntriesArgs.entries.length-1].command);
 
-                    System.out.println( " Current log size of peer number " + this.id + " is " +
-                            this.logEntries.size() + ". Adding entry to it.");
+    //                System.out.println( " Current log size of peer number " + this.id + " is " +
+      //                      this.logEntries.size() + ". Adding entry to it.");
 
                     if( lastEntry == null) {
-                        System.out.println("No entry present. adding entry");
+                        //System.out.println("No entry present. adding entry");
 
                         //this.logEntries = new ArrayList<LogEntries>(Arrays.asList(appendEntriesArgs.entries));
 
@@ -444,32 +444,32 @@ public class RaftNode implements MessageHandling, Runnable {
 
                         AppendEntriesReply reply = new AppendEntriesReply(appendEntriesArgs.term,true);
                         printLog(this.logEntries.toArray(new LogEntries[this.logEntries.size()]));
-                        System.out.println("End of No entry present. adding entry");
+                        //System.out.println("End of No entry present. adding entry");
                         return getMessageBundled(reply, this.id, message.getSrc());
 
                     }
                     else {
 
                         if(lastTerm == lastEntry.term && lastIndex == lastEntry.index) {
-                            System.out.println("last index and term matched. adding entry");
+                            //System.out.println("last index and term matched. adding entry");
 
                             this.logEntries.add(entry);
 
                             AppendEntriesReply reply = new AppendEntriesReply(appendEntriesArgs.term,true);
                             printLog(this.logEntries.toArray(new LogEntries[this.logEntries.size()]));
-                            System.out.println("End of last index and term matched. adding entry");
+                            //System.out.println("End of last index and term matched. adding entry");
                             return getMessageBundled(reply, this.id, message.getSrc());
 
                         }
                         else {
 
-                            System.out.println("Last index and term does not match. adding entry");
+                            //System.out.println("Last index and term does not match. adding entry");
                             this.logEntries = new ArrayList<LogEntries>(Arrays.asList(appendEntriesArgs.entries));
 
                             AppendEntriesReply reply = new AppendEntriesReply(appendEntriesArgs.term,true);
 
                             printLog(this.logEntries.toArray(new LogEntries[this.logEntries.size()]));
-                            System.out.println("end of Last index and term does not match. adding entry");
+                            //System.out.println("end of Last index and term does not match. adding entry");
                             return getMessageBundled(reply, this.id, message.getSrc());
 
                         }
@@ -576,7 +576,7 @@ public class RaftNode implements MessageHandling, Runnable {
 
             ArrayList<Integer> replied = new ArrayList<>();
 
-            int totalReplied = 0;
+            int totalReplied = 1;
 
             while(max_dest_id >= 0){
 
@@ -617,7 +617,7 @@ public class RaftNode implements MessageHandling, Runnable {
                 max_dest_id--;
             }
 
-            if(totalReplied >= (this.num_peers-1)/2 + 1) {
+            if(totalReplied > (this.num_peers)/2 ) {
 
                 for( int i = this.commitIndex; i < this.logEntries.size(); i++) {
 
@@ -627,11 +627,11 @@ public class RaftNode implements MessageHandling, Runnable {
 
                     try {
 
-                        System.out.println(" Applying state - \n Id - "  + this.id + "\n Commit Index - " + this.commitIndex
-                                +"\n Command : " + this.logEntries.get(i).command);
+                        //System.out.println(" Applying state - \n Id - "  + this.id + "\n Commit Index - " + this.commitIndex
+                        //       +"\n Command : " + this.logEntries.get(i).command);
 
                         lib.applyChannel(applyMsg);
-                        System.out.println("End of applying state \n");
+                        //System.out.println("End of applying state \n");
 
                     }
 
@@ -665,8 +665,9 @@ public class RaftNode implements MessageHandling, Runnable {
                 }
             }
             else {
-                //this.logEntries.remove(this.logEntries.size()-1);
+            //    this.logEntries.remove(this.logEntries.size()-1);
             }
+
             return new StartReply(this.logEntries.size(), appendEntriesArgs.term, true);
         }
 
@@ -676,11 +677,11 @@ public class RaftNode implements MessageHandling, Runnable {
 
     void printLog(LogEntries entries[]) {
 
-        System.out.println(" For ID - " + this.id);
-        for(LogEntries entry  : entries) {
-            System.out.println( " Index : "  + entry.index + "\n" + " Term : " + entry.term + "\n" + " Command : " + entry.command);
-        }
-        System.out.println("-------------------------------------------------------");
+        // System.out.println(" For ID - " + this.id);
+        // for(LogEntries entry  : entries) {
+        //     System.out.println( " Index : "  + entry.index + "\n" + " Term : " + entry.term + "\n" + " Command : " + entry.command);
+        // }
+        // System.out.println("-------------------------------------------------------");
 
     }
 
