@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class Config extends UnicastRemoteObject implements Remote {
@@ -126,7 +127,7 @@ public class Config extends UnicastRemoteObject implements Remote {
             /* Connect this raft peer*/
             this.connect(i);
 
-            this.logs.add(new HashMap<Integer, Integer>());
+            this.logs.add(new ConcurrentHashMap<Integer, Integer>());
         }
     }
 

@@ -387,6 +387,7 @@ public class RaftTest {
 
         if( (total1 > 30) || (total1 < 1)) {
             System.err.println("Too many or too few RPC to elect leader");
+            System.out.println(" Total 1 : " + total1);
             cfg.cleanup();
         }
 
@@ -481,6 +482,8 @@ public class RaftTest {
                 }
 
                 if( (total2 - total1) > ((iters + 4)*3)) {
+                    System.out.println("total" + (total2-total1));
+                    System.out.println(" Iters = " + (((iters + 4)*3)) );
                     System.err.println("Too many RPCs");
                     cfg.cleanup();
                 }
@@ -557,9 +560,98 @@ public class RaftTest {
                 case "Count":
                     TestCount();
                     break;
+
+                case "Backup1":
+                    TestBackup1();
+                    break;
+
             }
         } catch (Exception e) {
                 e.printStackTrace();
         }
     }
+
+    private static void TestBackup1() throws Exception {
+
+        int numServers = 5, leader = 0, leader2 = 0, i = 0, other = 0;
+
+        Config cfg = new Config( numServers, true /* is_reliable ? */, controllerPort );
+
+        System.out.println( "Testing leader backs up quickly over incorrect follower logs ...\n" );
+
+        /* Waiting for all raft peers to start and register with Transport Layer controller. */
+        cfg.waitUntilAllRegister();
+
+        cfg.startCommit(109, numServers);
+
+        // put leader and one follower in a partition
+        leader = cfg.checkOneLeader();
+        cfg.disconnect( (leader + 2) % numServers );
+        cfg.disconnect( (leader + 3) % numServers );
+        cfg.disconnect( (leader + 4) % numServers );
+
+        // submit lots of commands that won't commit
+        for(i = 0; i < 10; i ++) {
+            cfg.start(leader, 110 + i);
+        }
+
+
+        Thread.sleep( RAFT_ELECTION_TIMEOUT / 2);
+
+        cfg.disconnect( (leader + 0) % numServers );
+        cfg.disconnect( (leader + 1) % numServers );
+
+        // allow other partition to recover
+        cfg.connect( (leader + 2) % numServers );
+        cfg.connect( (leader + 3) % numServers );
+        cfg.connect( (leader + 4) % numServers );
+
+        // lots of successful commands to new group.
+        for(i = 0; i < 5; i ++) {
+            cfg.startCommit(115 + i, 3);
+        }
+
+        // now another partitioned leader and one follower
+        leader2 = cfg.checkOneLeader();
+        other = (leader + 2) % numServers;
+        if(leader2 == other) {
+            other = (leader2 + 1) % numServers;
+        }
+
+        cfg.disconnect(other);
+
+        // lots more commands that wont get committed
+        for(i = 0; i < 5; i ++) {
+            cfg.start(leader2, 120 + i);
+        }
+
+        Thread.sleep( RAFT_ELECTION_TIMEOUT / 2);
+
+        // bring original leader back to life
+        for(i = 0; i < numServers; i++) {
+            cfg.disconnect(i);
+        }
+
+        cfg.connect((leader + 0) % numServers);
+        cfg.connect((leader + 1) % numServers);
+        cfg.connect(other);
+
+        // lots of successful commands
+        for(i = 0; i < 5; i ++) {
+            cfg.startCommit(125 + i, 3);
+        }
+
+        // now everyone
+        for(i = 0; i < numServers; i++) {
+            cfg.connect(i);
+        }
+
+        cfg.startCommit(500, numServers);
+
+        System.out.println( "  ... Passed\n" );
+
+        cfg.cleanup();
+    }
+
+
 }
